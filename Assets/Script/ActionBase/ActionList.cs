@@ -5,11 +5,11 @@ namespace CardProject
 {
     public class ActionList : MonoBehaviour
     {
-        [SerializeReference] public List<Action> actions = new List<Action>();
+        [ActionAttribute(typeof(Action)), SerializeField] public ActionContainer _actions;
         //private Queue<ACTION> queueActions = new Queue<ACTION>();
         private List<Action> performingAction = new List<Action>();
         
-        
+
         
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -29,7 +29,7 @@ namespace CardProject
 
         private void PrepareAllActions()
         {
-            foreach (Action action in actions)
+            foreach (Action action in _actions.actions)
             {
                 action.SetSubJect(this.gameObject);
             }
@@ -39,17 +39,17 @@ namespace CardProject
         {
             performingAction.Clear();
             //ADD THE FIRST
-            if (actions.Count > 0)
+            if (_actions.actions.Count > 0)
             {
-                performingAction.Add(actions[0]);
+                performingAction.Add(_actions.actions[0]);
             }
         
-            while (actions.Count > 0)
+            while (_actions.actions.Count > 0)
             {
-                if (actions[0].startWithPrevious)
+                if (_actions.actions[0].startWithPrevious)
                 {
-                    performingAction.Add(actions[0]);
-                    actions.RemoveAt(0);
+                    performingAction.Add(_actions.actions[0]);
+                    _actions.actions.RemoveAt(0);
                 }
                 else
                 {

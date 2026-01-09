@@ -427,6 +427,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1749812040}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1382634769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1382634771}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1382634771
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1382634769}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.091579, y: 0.0020126477, z: 0.0035787635}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1749812039
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,10 +534,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deac24ef58e4f4042aaa60f4647994bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actions: []
+  _actions:
+    actions:
+    - rid: 5957101432169300062
+    - rid: 5957101432169300063
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5957101432169300062
+      type: {class: MoveAction, ns: CardProject, asm: buttonfactory.subclassattribute.Editor}
+      data:
+        startWithPrevious: 0
+        delayBeforeACTION: 0
+        speed: 0
+    - rid: 5957101432169300063
+      type: {class: TestAction, ns: CardProject, asm: buttonfactory.subclassattribute.Editor}
+      data:
+        startWithPrevious: 0
+        delayBeforeACTION: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -515,3 +560,4 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 1749812040}
   - {fileID: 1913864047}
+  - {fileID: 1382634771}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace CardProject
 {
@@ -39,5 +40,11 @@ namespace CardProject
             }
             return false;
         }
+    }
+    
+    [Serializable]
+    public class ActionContainer
+    {
+        [SerializeReference] public List<Action> actions = new List<Action>();
     }
 }
