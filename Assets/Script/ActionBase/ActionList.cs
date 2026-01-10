@@ -3,75 +3,46 @@ using UnityEngine;
 
 namespace CardProject
 {
-    public class ActionList : MonoBehaviour
+    public class ActionList
     {
-        [ActionAttribute(typeof(Action)), SerializeField] public ActionContainer _actions;
-        //private Queue<ACTION> queueActions = new Queue<ACTION>();
-        private List<Action> performingAction = new List<Action>();
-        
+        /*public ActionContainer _actions;
+        private List<Action> performingAction = new List<Action>();*/
+        private List<Action> actions = new List<Action>();
 
-        
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        public void RunActions()
         {
-            PrepareAllActions();
-            ResetPerformingAction();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (RunPerformingAction())
+            List<int> indexesToKill = new List<int>();
+            for(int i = 0; i < actions.Count; i++)
             {
-                ResetPerformingAction();
-            }
-        }
-
-        private void PrepareAllActions()
-        {
-            foreach (Action action in _actions.actions)
-            {
-                action.SetSubJect(this.gameObject);
-            }
-        }
-    
-        private void ResetPerformingAction()
-        {
-            performingAction.Clear();
-            //ADD THE FIRST
-            if (_actions.actions.Count > 0)
-            {
-                performingAction.Add(_actions.actions[0]);
-            }
-        
-            while (_actions.actions.Count > 0)
-            {
-                if (_actions.actions[0].startWithPrevious)
+                if (actions[i].UpdateUntilDone())
                 {
-                    performingAction.Add(_actions.actions[0]);
-                    _actions.actions.RemoveAt(0);
+                    indexesToKill.Add(i);
                 }
-                else
+                if (actions[i].blocking)
                 {
                     break;
                 }
             }
 
-            return;
+            for (int i = indexesToKill.Count - 1; i >= 0; i--)
+            {
+                actions.RemoveAt(indexesToKill[i]);
+            }
+        }
+        
+        public void InitActionList(GameObject gameObject)
+        {
+            foreach (Action action in actions)
+            {
+                action.SetSubJect(gameObject);
+                action.SetUp();
+            }
         }
 
-        private bool RunPerformingAction()
+        public void AddAction(Action action)
         {
-            bool isAllDone = true;
-            foreach (Action action in performingAction)
-            {
-                if (!action.UpdateUntilDone())
-                {
-                    isAllDone = false;
-                    break;
-                }
-            }
-            return isAllDone;
+            actions.Add(action);
         }
+
     }
 }

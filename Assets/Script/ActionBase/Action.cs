@@ -4,18 +4,38 @@ using System.Collections.Generic;
 
 namespace CardProject
 {
-    [Serializable]
     public abstract class Action
     {
-        public bool startWithPrevious;
-        public float delayBeforeACTION;
+        // GENERAL ACTION VARIABLE
+        public bool blocking;
+        public bool endWithPrevious;
+        public float delay;
         
-        private GameObject subject;
-        public abstract void SetSubJect(GameObject subj);
+        protected GameObject subject;
+
+        public Action(bool bkin, bool ewp, float dela)
+        {
+            blocking = bkin;
+            endWithPrevious = ewp;
+            delay = dela;
+        }
+        
+        public Action(bool bkin, float dela)
+        {
+            blocking = bkin;
+            delay = dela;
+        }
+        
+        public void SetSubJect(GameObject subj)
+        {
+            subject = subj;
+        }
+
+        public abstract void SetUp();
         public abstract bool UpdateLogicUntilDone();
         public bool UpdateUntilDone()
         {
-            if (RUNDelay())
+            if (RunDelayUntilDone())
             {
                 if (!UpdateLogicUntilDone())
                 {
@@ -31,20 +51,14 @@ namespace CardProject
                 return false;
             }
         }
-        private bool RUNDelay()
+        private bool RunDelayUntilDone()
         {
-            delayBeforeACTION -= Time.deltaTime;
-            if (delayBeforeACTION <= 0.0f)
+            delay -= Time.deltaTime;
+            if (delay <= 0.0f)
             {
                 return true;
             }
             return false;
         }
-    }
-    
-    [Serializable]
-    public class ActionContainer
-    {
-        [SerializeReference] public List<Action> actions = new List<Action>();
     }
 }
