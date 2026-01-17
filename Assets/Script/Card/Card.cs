@@ -1,21 +1,34 @@
+using System;
 using UnityEngine;
 
 namespace CardProject
 {
     public class Card : MonoBehaviour
     {
-        ActionList actionList = new ActionList();
-        
-        public void InitCard(Vector2 destina)
+        [SerializeField] private SpriteRenderer backCardRenderer;
+        private bool isFront = true;
+
+        private void Start()
         {
-            actionList.AddAction(new MoveAction(false, 2.0f, 20.0f, destina));
-            actionList.AddAction(new RotateAction(false,true,  2.0f, 500.0f, 5.0f,true));
-            actionList.InitActionList(this.gameObject);
+            
         }
-        
-        public void RunCardActions()
+
+        private void Update()
         {
-            actionList.RunActions();
+            bool flipThreshHold = gameObject.transform.localRotation.eulerAngles.y%360.0f > 90.0f;
+            if (flipThreshHold)
+            {
+                if (backCardRenderer.sortingOrder == 0)
+                {
+                    backCardRenderer.sortingOrder = 2;
+                    isFront = false;
+                }
+                
+            }else
+            {
+                backCardRenderer.sortingOrder = 0;
+                isFront = true;
+            }
         }
     }
 }

@@ -5,29 +5,22 @@ namespace CardProject
 {
     public class MoveAction : Action
     {
-        private float speed;
         private Vector3 destination;
-        public void SetSpeed(float spd) { speed = spd; }
-        public void SetDestination(Vector2 dest) { destination = dest; }
-        
-        Transform subjectTransform;
+        private Transform subjectTransform;
+        private Vector2 originalPosition;
 
-        public MoveAction(bool blocking, float delay, float speed, Vector2 destination) : base(blocking, delay)
+        public MoveAction(GameObject subject, bool blocking, float delay, float duration, Vector2 destination) : base(subject,blocking, delay, duration)
         {
-            this.speed = speed;
             this.destination = destination;
+            subjectTransform = this.subject.transform;
+            originalPosition = this.subject.transform.position;
         }
         
-        public override void SetUp()
-        {
-            subjectTransform = subject.gameObject.GetComponent<Transform>();
-        }
-        
-        public override bool UpdateLogicUntilDone()
+        protected override bool UpdateLogicUntilDone(float dt)
         {
             if (Vector3.Distance(subjectTransform.position, destination) > 0.001f)
             {
-                MoveTowardsDestination();
+                MoveTowardsDestination(dt);
                 return false;
             }
             else
@@ -37,9 +30,9 @@ namespace CardProject
             
         }
 
-        private void MoveTowardsDestination()
+        private void MoveTowardsDestination(float dt)
         {
-            subjectTransform.position = Vector3.MoveTowards(subjectTransform.position, destination, speed * Time.deltaTime);
+            subjectTransform.position = Vector2.Lerp(subjectTransform.position, destination, speed * dt);
         }
     }
 }

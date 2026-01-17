@@ -6,53 +6,26 @@ namespace CardProject
     public class RotateAction : Action
     {
         private float rotateSpeed;
-        private float rotateDuration;
         private bool isRotateRight;
-        public void SetRotateSpeed(float rotatespd) { rotateSpeed = rotatespd; }
-        public void SetRotateDuration(float rotatedur) { rotateDuration = rotatedur; }
-        public void SetRotateRight(bool rt) { isRotateRight = rt; }
-
-        Transform subjectTransform;
-        int rightMultiplier = 1;
-        bool infinite = false;
+        private Transform subjectTransform;
+        private int rightMultiplier = 1;
         
-        public RotateAction(bool blocking, bool endWPrevious, float delay, float rotateSpeed, float rotateDuration, bool isRight) : base(blocking, endWPrevious, delay)
+        public RotateAction(GameObject subject, bool blocking, float delay, float rotateSpeed, float duration, bool isRight) : base(subject,blocking, delay, duration)
         {
             this.rotateSpeed = rotateSpeed;
-            this.rotateDuration = rotateDuration;
             isRotateRight = isRight;
-        }
-        
-        public override void SetUp()
-        {
-            subjectTransform = subject.GetComponent<Transform>();
+            subjectTransform = subject.transform;
             if (isRotateRight)
             {
                 rightMultiplier = -1;
             }
-
-            if (rotateDuration < 0)
-            {
-                infinite = true;
-            }
         }
 
-        public override bool UpdateLogicUntilDone()
+        protected override bool UpdateLogicUntilDone(float dt)
         {
-            if (infinite)
+            if (timePasses >= duration)
             {
-                if (endWithPrevious)
-                {
-                    
-                }
-            }
-            else
-            {
-                rotateDuration -= Time.deltaTime;
-                if (rotateDuration < 0)
-                {
-                    return true;
-                }
+                return true;
             }
             Rotating();
             return false;

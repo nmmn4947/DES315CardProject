@@ -5,16 +5,14 @@ namespace CardProject
 {
     public class ActionList
     {
-        /*public ActionContainer _actions;
-        private List<Action> performingAction = new List<Action>();*/
         private List<Action> actions = new List<Action>();
 
-        public void RunActions()
+        public void RunActions(float dt)
         {
             List<int> indexesToKill = new List<int>();
             for(int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].UpdateUntilDone())
+                if (actions[i].UpdateUntilDone(dt))
                 {
                     indexesToKill.Add(i);
                 }
@@ -29,19 +27,22 @@ namespace CardProject
                 actions.RemoveAt(indexesToKill[i]);
             }
         }
-        
-        public void InitActionList(GameObject gameObject)
-        {
-            foreach (Action action in actions)
-            {
-                action.SetSubJect(gameObject);
-                action.SetUp();
-            }
-        }
 
         public void AddAction(Action action)
         {
             actions.Add(action);
+        }
+
+        public bool IsEmpty()
+        {
+            if (actions.Count > 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
     }

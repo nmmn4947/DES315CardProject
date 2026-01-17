@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b34a20ecb2983ae40a99512a2f04b206
+guid: 075675b1bf7ff0643b86d358caff145f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -891894759406112873
-    second: AceOfSpades_0
+      213: -3190420451031838051
+    second: backOfCard_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AceOfSpades_0
+      name: backOfCard_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 4
         y: 0
-        width: 800
-        height: 1160
+        width: 748
+        height: 1055
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79fe098117a5f93f0800000000000000
-      internalID: -891894759406112873
+      spriteID: d921b1cd08959b3d0800000000000000
+      internalID: -3190420451031838051
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      AceOfSpades_0: -891894759406112873
+      backOfCard_0: -3190420451031838051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

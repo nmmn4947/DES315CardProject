@@ -8,37 +8,34 @@ namespace CardProject
     {
         // GENERAL ACTION VARIABLE
         public bool blocking;
-        public bool endWithPrevious;
         public float delay;
+        public float timePasses = 0.0f;
+        public float duration;
+        private int percentageDone;
         
         protected GameObject subject;
-
-        public Action(bool bkin, bool ewp, float dela)
-        {
-            blocking = bkin;
-            endWithPrevious = ewp;
-            delay = dela;
-        }
         
-        public Action(bool bkin, float dela)
+        protected Action(GameObject subject, bool blocking, float delay, float duration)
         {
-            blocking = bkin;
-            delay = dela;
-        }
-        
-        public void SetSubJect(GameObject subj)
-        {
-            subject = subj;
+            this.subject = subject;
+            this.blocking = blocking;
+            this.delay = delay;
+            this.duration = duration;
         }
 
-        public abstract void SetUp();
-        public abstract bool UpdateLogicUntilDone();
-        public bool UpdateUntilDone()
+        static public void SynchronizeDurationFirstToSecond(Action action1, Action action2)
         {
-            if (RunDelayUntilDone())
+            action2.duration = action1.duration;
+        }
+        
+        protected abstract bool UpdateLogicUntilDone(float dt);
+        public bool UpdateUntilDone(float dt)
+        {
+            if (RunDelayUntilDone(dt))
             {
-                if (!UpdateLogicUntilDone())
+                if (!UpdateLogicUntilDone(dt))
                 {
+                    timePasses += dt;
                     return false;
                 }
                 else
@@ -51,7 +48,7 @@ namespace CardProject
                 return false;
             }
         }
-        private bool RunDelayUntilDone()
+        private bool RunDelayUntilDone(float dt)
         {
             delay -= Time.deltaTime;
             if (delay <= 0.0f)
