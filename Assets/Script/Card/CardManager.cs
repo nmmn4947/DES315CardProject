@@ -19,7 +19,6 @@ namespace CardProject
             for (int i = 0; i < 3; i++)
             {
                 Card currentCard = SpawnCard();
-                //currentCard.InitCard(RandomPosition());
                 cards.Add(currentCard);
             }
         }
@@ -28,7 +27,6 @@ namespace CardProject
         {
             AddActionIfListEmpty();
             actionList.RunActions(Time.deltaTime);
-            Debug.Log(actionList.GetActionListCount());
         }
 
         private Card SpawnCard()
@@ -38,6 +36,7 @@ namespace CardProject
             return c1;
         }
 
+        #region TestingCode
         private Vector2 RandomPosition()
         {
             Camera cam = Camera.main;
@@ -57,8 +56,8 @@ namespace CardProject
             
             return new Vector2(UnityEngine.Random.Range(leftX, rightX), UnityEngine.Random.Range(bottomY, topY));
         }
-
-        private void AddAllCardsRandomSpinningScalingFlippingMovement()
+        
+        private void AddAllCardsRandomSpinningScalingFlippingMovement() 
         {
             List<Action> newNestList = new List<Action>();
             for (int i = 0; i < cards.Count; i++)
@@ -100,6 +99,7 @@ namespace CardProject
                 AddAllCardsRandomSpinningScalingFlippingMovement();
             }
         }
+        #endregion
     }
 }
 

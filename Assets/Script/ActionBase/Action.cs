@@ -14,8 +14,6 @@ namespace CardProject
         public float percentageDone;  // 0 - 1
         
         protected GameObject subject;
-
-        private int GroupFlag = -1;
         
         protected Action(bool blocking, float delay, float duration)
         {
