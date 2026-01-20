@@ -5,30 +5,16 @@ namespace CardProject
 {
     public class Card : MonoBehaviour
     {
+        [SerializeField] private SpriteRenderer frontCardRenderer;
         [SerializeField] private SpriteRenderer backCardRenderer;
-        private bool isFront = true;
-
-        private void Start()
-        {
-            
-        }
+        private bool isFront;
 
         private void Update()
         {
-            bool flipThreshHold = gameObject.transform.localRotation.eulerAngles.y%360.0f > 90.0f;
-            if (flipThreshHold)
-            {
-                if (backCardRenderer.sortingOrder == 0)
-                {
-                    backCardRenderer.sortingOrder = 2;
-                    isFront = false;
-                }
-                
-            }else
-            {
-                backCardRenderer.sortingOrder = 0;
-                isFront = true;
-            }
+            bool isFront = transform.localRotation.eulerAngles.y < 90f
+                           || transform.localRotation.eulerAngles.y > 270f;
+            frontCardRenderer.sortingOrder = isFront ? 1 : 0;
+            backCardRenderer.sortingOrder  = isFront ? 0 : 1;
         }
     }
 }

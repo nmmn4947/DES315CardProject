@@ -8,7 +8,7 @@ namespace CardProject
         private Transform subjectTransform;
         private Vector2 originalScale;
         
-        public ScaleAction(GameObject subject, bool blocking, float delay, Vector2 finalScale, float duration) : base(subject, blocking, delay)
+        public ScaleAction(GameObject subject, bool blocking, float delay, Vector2 finalScale, float duration) : base(subject, blocking, delay, duration)
         {
             this.finalScale = finalScale;
             this.duration = duration;

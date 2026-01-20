@@ -27,12 +27,10 @@ namespace CardProject
                 actions.RemoveAt(indexesToKill[i]);
             }
         }
-
         public void AddAction(Action action)
         {
             actions.Add(action);
         }
-
         public bool IsEmpty()
         {
             if (actions.Count > 0)
@@ -43,6 +41,10 @@ namespace CardProject
             {
                 return true;
             }
+        }
+        public int GetActionListCount()
+        {
+            return actions.Count;
         }
 
     }

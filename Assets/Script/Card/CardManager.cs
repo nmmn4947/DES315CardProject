@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = System.Random;
 
 namespace CardProject
 {
     public class CardManager : MonoBehaviour
     {
-        private ActionList actionList = new ActionList();
-        
         public Card cardPrefab;
         
         private List<Card> cards = new List<Card>();
+        private ActionList actionList = new ActionList();
+        private float delay = 0.5f;
         
         private void Start()
         {
@@ -27,6 +28,7 @@ namespace CardProject
         {
             AddActionIfListEmpty();
             actionList.RunActions(Time.deltaTime);
+            Debug.Log(actionList.GetActionListCount());
         }
 
         private Card SpawnCard()
@@ -58,36 +60,37 @@ namespace CardProject
 
         private void AddAllCardsRandomSpinningScalingFlippingMovement()
         {
-            float delay = 0.5f;
-            for (int i = 0; i < cards.Count - 1; i++)
+            List<Action> newNestList = new List<Action>();
+            for (int i = 0; i < cards.Count; i++)
             {
-                actionList.AddAction(new MoveAction(cards[i].gameObject, false, i * delay, 20.0f, RandomPosition()));
+                AddOneLoop(newNestList, i); // all cards 
+            }
+            
+            NestedAction allOfTheAbove = new NestedAction(newNestList, true, 0.0f);
+            actionList.AddAction(allOfTheAbove);
+            actionList.AddAction(new WaitAction(1.5f));
+        }
+
+        private void AddOneLoop(List<Action> list, int i)
+        {
+            bool isRight = i%2 != 0;
+            MoveAction moveAction = new MoveAction(cards[i].gameObject, false, i * delay, 20.0f, RandomPosition());
+            RotateAction rotateAction = new RotateAction(cards[i].gameObject,false, i * delay, 500.0f,float.MaxValue, isRight);
+            Action.SynchronizeDurationFirstToSecond(moveAction, rotateAction);
+            list.Add(moveAction);
+            list.Add(rotateAction);
                 
-                bool isRight = i%2 != 0;
-                actionList.AddAction(new RotateAction(cards[i].gameObject,false, i * delay, 500.0f,3.0f, isRight));
+            list.Add(new FlipAction(cards[i].gameObject,false, 0.0f, 0.2f));
                 
-                actionList.AddAction(new FlipAction(cards[i].gameObject,false, 0.0f, 0.2f));
-                
-                Vector2 finalScale = new Vector2(1.0f, 1.0f);
-                if (cards[i].gameObject.transform.localScale.x <= 1.05f)
-                {
-                    finalScale = new Vector2(3.0f, 3.0f);
-                }
-                actionList.AddAction(new ScaleAction(cards[i].gameObject,false, i * delay, finalScale, 3.0f));
+            Vector2 finalScale = new Vector2(1.0f, 1.0f);
+            if (cards[i].gameObject.transform.localScale.x <= 1.05f)
+            {
+                finalScale = new Vector2(3.0f, 3.0f);
             }
 
-            int lastIndex = cards.Count - 1;
-            
-            bool right = (lastIndex)%2 != 0;
-            actionList.AddAction(new MoveAction(cards[^1].gameObject,false, lastIndex * delay, 20.0f,RandomPosition()));
-            actionList.AddAction(new RotateAction(cards[^1].gameObject,false, lastIndex * delay, 500.0f,3.0f, right));
-            actionList.AddAction(new FlipAction(cards[^1].gameObject,false, 0.0f, 0.2f));
-            Vector2 finalScale2 = new Vector2(1.0f, 1.0f);
-            if (cards[^1].gameObject.transform.localScale.x <= 1.05f)
-            {
-                finalScale2 = new Vector2(3.0f, 3.0f);
-            }
-            actionList.AddAction(new ScaleAction(cards[^1].gameObject,true, lastIndex * delay, finalScale2, 3.0f));
+            ScaleAction scaleAction = new ScaleAction(cards[i].gameObject, false, i * delay, finalScale, 3.0f);
+            list.Add(scaleAction);
+            Action.SynchronizeDurationFirstToSecond(moveAction, scaleAction);
         }
 
         private void AddActionIfListEmpty()
