@@ -1,39 +1,44 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CardProject
 {
     public class RotateAction : Action
     {
-        private float rotateSpeed;
-        private bool isRotateRight;
-        private Transform subjectTransform;
+        private float angleCalculation;
         private int rightMultiplier = 1;
+        private Transform subjectTransform;
+        private float startingAngle;
+        private float finalAngle;
+        private bool once = false;
         
-        public RotateAction(GameObject subject, bool blocking, float delay, float rotateSpeed, float duration, bool isRight) : base(subject,blocking, delay, duration)
+        public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle, int loopCountMultiplier, bool isRight) : base(subject, blocking, delay, duration)
         {
-            this.rotateSpeed = rotateSpeed;
-            isRotateRight = isRight;
             subjectTransform = subject.transform;
-            if (isRotateRight)
+            if (isRight)
             {
                 rightMultiplier = -1;
             }
+            angleCalculation = goalAngle + (loopCountMultiplier * 360.0f);
         }
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
-            if (timePasses >= duration)
-            {
-                return true;
-            }
-            Rotating();
-            return false;
+            subjectTransform.localRotation = Quaternion.Euler(0f, 0f, AngleLerping());
+            return timePasses > duration;
         }
 
-        private void Rotating()
+        private float AngleLerping()
         {
-            subjectTransform.Rotate(0f, 0f,  rightMultiplier * rotateSpeed * Time.deltaTime);
+            float currentAngle = Mathf.SmoothStep(startingAngle, finalAngle, timePasses/duration);
+            return currentAngle;
+        }
+
+        protected override void RunOnceBeforeUpdate()
+        {
+            startingAngle = subjectTransform.localEulerAngles.z;
+            finalAngle = angleCalculation * rightMultiplier;
         }
     }
 }

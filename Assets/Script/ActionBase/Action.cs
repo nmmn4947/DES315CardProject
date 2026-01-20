@@ -14,6 +14,8 @@ namespace CardProject
         public float percentageDone;  // 0 - 1
         
         protected GameObject subject;
+
+        private bool runEnterOnce = false;
         
         protected Action(bool blocking, float delay, float duration)
         {
@@ -42,6 +44,7 @@ namespace CardProject
         {
             if (RunDelayUntilDone(dt))
             {
+                Enter();
                 if (!UpdateLogicUntilDone(dt))
                 {
                     timePasses += dt; //update timePasses
@@ -56,6 +59,7 @@ namespace CardProject
                 }
                 else
                 {
+                    RunOnceBeforeEnd();
                     return true;
                 }
             }
@@ -64,6 +68,19 @@ namespace CardProject
                 return false;
             }
         }
+
+        protected virtual void RunOnceBeforeUpdate() { }
+        protected virtual void RunOnceBeforeEnd() { }
+
+        private void Enter()
+        {
+            if (!runEnterOnce)
+            {
+                RunOnceBeforeUpdate();
+                runEnterOnce = true;
+            }
+        }
+        
         private bool RunDelayUntilDone(float dt)
         {
             delay -= Time.deltaTime;

@@ -16,23 +16,28 @@ namespace CardProject
         
         private void Start()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
             {
-                Card currentCard = SpawnCard();
+                Card currentCard = SpawnCard(i);
                 cards.Add(currentCard);
             }
+            
+            actionList.AddAction(new RotateAction(cards[0].gameObject, true, 0.0f, 1.0f, 0.0f, 2, false));
+            actionList.AddAction(new RotateAction(cards[0].gameObject, true, 0.0f, 1.0f, 180.0f, 2, true));
+            actionList.AddAction(new RotateAction(cards[0].gameObject, true, 0.0f, 1.0f, 0.0f, 2, false));
         }
 
         private void Update()
         {
-            AddActionIfListEmpty();
+            //AddActionIfListEmpty();
             actionList.RunActions(Time.deltaTime);
         }
 
-        private Card SpawnCard()
+        private Card SpawnCard(int i)
         {
             GameObject card1 = Instantiate(cardPrefab.gameObject);
             Card c1 = card1.GetComponent<Card>();
+            c1.SetCardData(i);
             return c1;
         }
 
@@ -74,7 +79,7 @@ namespace CardProject
         {
             bool isRight = i%2 != 0;
             MoveAction moveAction = new MoveAction(cards[i].gameObject, false, i * delay, 20.0f, RandomPosition());
-            RotateAction rotateAction = new RotateAction(cards[i].gameObject,false, i * delay, 500.0f,float.MaxValue, isRight);
+            SpinAction rotateAction = new SpinAction(cards[i].gameObject,false, i * delay, 500.0f,float.MaxValue, isRight);
             Action.SynchronizeDurationFirstToSecond(moveAction, rotateAction);
             list.Add(moveAction);
             list.Add(rotateAction);
