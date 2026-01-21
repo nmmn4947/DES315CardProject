@@ -16,7 +16,7 @@ namespace CardProject
         protected GameObject subject;
 
         private bool runEnterOnce = false;
-        
+        private float clampedTime;
         protected Action(bool blocking, float delay, float duration)
         {
             this.subject = null;
@@ -37,6 +37,11 @@ namespace CardProject
         {
             action2.duration = action1.duration;
         }
+
+        public void SynchronizeDurationFromThisAction(Action action)
+        {
+            duration = action.duration;
+        }
         
         protected abstract bool UpdateLogicUntilDone(float dt);
         
@@ -48,6 +53,7 @@ namespace CardProject
                 if (!UpdateLogicUntilDone(dt))
                 {
                     timePasses += dt; //update timePasses
+                    clampedTime = timePasses / duration;
                     
                     percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
                     if (timePasses > duration)
@@ -101,5 +107,30 @@ namespace CardProject
                 return duration - timePasses;
             }
         }
+
+        #region EasingCode
+
+        protected float EaseOutQuadTime()
+        {
+            float t = 1f - ((1f - clampedTime) * (1f - clampedTime));
+            return t;
+        }
+        
+        protected float EaseOutBackTime()
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1f;
+            
+            float ret = 1 + c3 * Mathf.Pow(clampedTime - 1, 3) + c1 * Mathf.Pow(clampedTime - 1, 2);
+            return ret;
+        }
+
+        protected float EaseOutExpo()
+        {
+            return clampedTime == 1f ? 1f : 1f - Mathf.Pow(2f, -10f * clampedTime);
+        }
+
+        #endregion
+
     }
 }

@@ -25,7 +25,7 @@ namespace CardProject
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
-            subjectTransform.localRotation = Quaternion.Euler(0f, 0f, AngleLerping());
+            subjectTransform.localRotation = Quaternion.Euler(subjectTransform.eulerAngles.x, subjectTransform.eulerAngles.y, AngleEaseOutQuad());
             return timePasses > duration;
         }
 
@@ -35,10 +35,18 @@ namespace CardProject
             return currentAngle;
         }
 
+        private float AngleEaseOutQuad()
+        {
+            float currentAngle = Mathf.Lerp(startingAngle, finalAngle, EaseOutExpo());
+            return currentAngle;
+        }
+
         protected override void RunOnceBeforeUpdate()
         {
             startingAngle = subjectTransform.localEulerAngles.z;
             finalAngle = angleCalculation * rightMultiplier;
         }
+        
+        
     }
 }
