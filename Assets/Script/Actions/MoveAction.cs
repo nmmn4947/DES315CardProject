@@ -22,10 +22,14 @@ namespace CardProject
         {
             this.destination = destination;
             subjectTransform = this.subject.transform;
-            originalPosition = this.subject.transform.position;
             this.speed = Vector2.Distance(subject.transform.position, destination) / duration;
         }
-        
+
+        protected override void RunOnceBeforeUpdate()
+        {
+            originalPosition = this.subject.transform.position;
+        }
+
         protected override bool UpdateLogicUntilDone(float dt)
         {
             timePasses += dt;

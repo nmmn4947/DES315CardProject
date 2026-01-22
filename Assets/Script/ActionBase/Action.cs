@@ -65,7 +65,7 @@ namespace CardProject
                 }
                 else
                 {
-                    RunOnceBeforeEnd();
+                    RunOnceAfterUpdate();
                     return true;
                 }
             }
@@ -76,7 +76,7 @@ namespace CardProject
         }
 
         protected virtual void RunOnceBeforeUpdate() { }
-        protected virtual void RunOnceBeforeEnd() { }
+        protected virtual void RunOnceAfterUpdate() { }
 
         private void Enter()
         {

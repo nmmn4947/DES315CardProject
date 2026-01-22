@@ -12,6 +12,11 @@ namespace CardProject
         public FlipAction(GameObject subject, bool blocking, float delay, float duration) :  base(subject, blocking, delay, duration)
         {
             subjectTransform = subject.transform;
+
+        }
+
+        protected override void RunOnceBeforeUpdate()
+        {
             startRotation = subjectTransform.localRotation;
             endRotation = startRotation * Quaternion.Euler(0f, 180f, 0f);
         }

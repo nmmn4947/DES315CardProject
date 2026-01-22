@@ -23,7 +23,8 @@ namespace CardProject
         [SerializeField] private SpriteRenderer backCardRenderer;
         private bool isFront;
         
-        CardData cardData;
+        public bool GetIsFront(){ return isFront; }
+        public CardData cardData;
         
         private void Update()
         {
