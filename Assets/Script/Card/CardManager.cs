@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Random = System.Random;
 
@@ -15,16 +16,20 @@ namespace CardProject
         private ActionList actionList = new ActionList();
         private List<DeckData> deckData = new List<DeckData>();
         private DeckData freeDeck = new DeckData(Vector3.zero, DeckData.DeckHoldType.None, false);
-        private DeckData drawDeck = new DeckData(Vector3.zero, DeckData.DeckHoldType.Stacked, true);
+        private DeckData drawDeck;
         private DeckData player1Hand;
         [SerializeField] private GameObject handPosition;
+        [SerializeField] private GameObject drawDeckPosition;
         
         private float DEFAULTDELAY = 0.01f;
         private float DEFAULTSTACKEDPOSOFFSET = 0.05f;
         private float DEFAULTSTACKEDZOFFSET = 0.1f;
+        private float DEFAULTFLIPDURATION = 0.6f;
+        private float DEFAULTMOVEDURATION = 0.4f;
         
         private void Start()
         {
+            drawDeck = new DeckData(drawDeckPosition.transform.position, DeckData.DeckHoldType.Stacked, true);
             player1Hand = new DeckData(handPosition.transform.position, DeckData.DeckHoldType.Spread, false);
                 
             //DeckData
@@ -40,9 +45,20 @@ namespace CardProject
                 freeDeck.cards.Add(currentCard);
             }
 
-            MoveAllCardsInToThisDeck(drawDeck, DEFAULTDELAY * 5);
-            ShuffleThisDeck(drawDeck);
-            MoveSomeCardsIntoDeck(drawDeck, player1Hand, 7, DEFAULTDELAY * 5);
+            MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5);
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(drawDeck, player1Hand, 7, DEFAULTDELAY * 5), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player1Hand, drawDeck, 7, DEFAULTDELAY * 5), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(drawDeck, player1Hand, 7, DEFAULTDELAY * 5), true, 0.0f, 0.5f));
+            /*System.Action act = () => ShuffleThisDeck(drawDeck);
+            actionList.AddAction(new CallBackAction(act, true,0.0f, 0.5f ));
+            System.Action act2 = () => MoveCardsIntoDeck(drawDeck, player1Hand, 52, DEFAULTDELAY * 5);
+            actionList.AddAction(new CallBackAction(act2, true, 0.0f, 0.5f ));
+            System.Action act3 = () => MoveCardsIntoDeck(player1Hand, drawDeck, 52, DEFAULTDELAY * 5);
+            actionList.AddAction(new CallBackAction(act3, true, 0.0f, 0.5f ));
+            System.Action act4 = () => MoveCardsIntoDeck(player1Hand, drawDeck, 52, DEFAULTDELAY * 5);
+            actionList.AddAction(new CallBackAction(act4, true, 0.0f, 0.5f ));*/
+            
             //actionList.AddAction(new WaitAction(5f));
             //MoveSomeCardsIntoDeck(drawDeck, player1Hand, 7, DEFAULTDELAY);
         }
@@ -52,6 +68,11 @@ namespace CardProject
             //AddActionIfListEmpty();
             CardUpdateOnHand(player1Hand);
             actionList.RunActions(Time.deltaTime);
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
         
         #region SpawningCard
@@ -130,73 +151,7 @@ namespace CardProject
         }
         #endregion
         
-        private void AddActionIfListEmpty()
-        {
-            if (actionList.IsEmpty())
-            {
-                actionList.AddAction(new WaitAction(3f));
-                CombineCardToDeck(drawDeck.currentPosition);
-                actionList.AddAction(new WaitAction(1f));
-                RotateAllCardsStairCaseOnce(0.01f);
-            }
-        }
-        
-        #region CardLogic
-        
-        public void MoveAllCardsInToThisDeck(DeckData chosendeck, float delayEachCard)
-        {
-            //MOVING FROM ALL DECKS
-            foreach (DeckData dd in deckData)
-            {
-                if (dd == chosendeck)
-                {
-                    continue;
-                }
-                
-                int originalNotChosenDeckSize = dd.cards.Count;
-                
-                List<Action> newNestList = new List<Action>();
-                int i = 0;
-                while (dd.cards.Count > 0)
-                {
-                    chosendeck.cards.Insert(0,dd.cards[0]);
-                    MoveAction moveAction = null;
-                    switch (chosendeck.currentHoldType)
-                    {
-                        case DeckData.DeckHoldType.Stacked:
-                            moveAction = new MoveAction(0.25f, dd.cards[0].gameObject, false, delayEachCard * i, PosMoveCardStackedStyle(i, chosendeck.currentPosition, originalNotChosenDeckSize));
-                            newNestList.Add(moveAction);
-                            break;
-                        case DeckData.DeckHoldType.Spread:
-                            MoveSpreadDeck(ref newNestList, chosendeck, delayEachCard, i);
-                            break;
-                        case DeckData.DeckHoldType.None:
-                            break;
-                    }
-                    if (chosendeck.isFlipDown)
-                    {
-                        if (!dd.cards[0].GetIsFront())
-                        {
-                            newNestList.Add(new FlipAction(dd.cards[0].gameObject, false, delayEachCard * i, 0.3f));
-                        }
-                    }
-                    else
-                    {
-                        if (dd.cards[0].GetIsFront())
-                        {
-                            newNestList.Add(new FlipAction(dd.cards[0].gameObject, false, delayEachCard * i, 0.3f));
-                        }
-                    }
-
-                    i++;
-                    dd.cards.RemoveAt(0);
-                }
-                NestedAction eachDeckMove = new NestedAction(newNestList, true, 0.0f);
-                actionList.AddAction(eachDeckMove);
-            }
-        }
-        
-        public void MoveSomeCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard)
+        public void MoveCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard)
         {
             if (amountOfCards > moveFromDeck.cards.Count)
             {
@@ -207,39 +162,42 @@ namespace CardProject
             
             //WRONG LOGIC RIGHT NOW
             int originalNotChosenDeckSize = moveFromDeck.cards.Count;
-                
+            int originalChosenDeckSize = moveToDeck.cards.Count;
+            //Debug.Log(moveFromDeck.Peek().transform.position.z);
             List<Action> newNestList = new List<Action>();
             for (int i = 0; i < amountOfCards; i++)
             {
-                moveToDeck.cards.Insert(0,moveFromDeck.cards[0]);
+                moveToDeck.Push(moveFromDeck.Peek());
+                Card currentCard = moveFromDeck.Peek();
                 MoveAction moveAction = null;
                 switch (moveToDeck.currentHoldType)
                 {
                     case DeckData.DeckHoldType.Stacked:
-                        moveAction = new MoveAction(0.25f, moveFromDeck.cards[0].gameObject, false, delayEachCard * i, PosMoveCardStackedStyle(i, moveToDeck.currentPosition, originalNotChosenDeckSize));
+                        moveAction = new MoveAction(DEFAULTMOVEDURATION, currentCard.gameObject, false, delayEachCard * i, PosMoveCardStackedStyle(moveToDeck.cards.Count - 1, moveToDeck.currentPosition, originalNotChosenDeckSize));
                         newNestList.Add(moveAction);
                         break;
                     case DeckData.DeckHoldType.Spread:
-                        MoveSpreadDeck(ref newNestList,moveToDeck, delayEachCard, i);
+                        MoveSpreadDeck(ref newNestList,moveToDeck, delayEachCard, moveToDeck.cards.Count - 1);
                         break;
                     case DeckData.DeckHoldType.None:
                         break;
                 }
                 if (moveToDeck.isFlipDown)
                 {
-                    if (moveFromDeck.cards[0].GetIsFront())
+                    if (!currentCard.GetIsFront())
                     {
-                        newNestList.Add(new FlipAction(moveFromDeck.cards[0].gameObject, false, delayEachCard * i, 0.3f));
+                        newNestList.Add(new FlipAction(currentCard.gameObject, false, delayEachCard * i, DEFAULTFLIPDURATION));
                     }
                 }
                 else
                 {
-                    if (!moveFromDeck.cards[0].GetIsFront())
+                    if (!currentCard.GetIsFront())
                     {
-                        newNestList.Add(new FlipAction(moveFromDeck.cards[0].gameObject, false, delayEachCard * i, 0.3f));
+                        newNestList.Add(new FlipAction(currentCard.gameObject, false, delayEachCard * i, DEFAULTFLIPDURATION));
                     }
                 }
-                moveFromDeck.cards.RemoveAt(0);
+                moveFromDeck.Pop();
+                //Debug.Log(moveToDeck.cards.Count - 1);
             }
             
             NestedAction nestedList = new NestedAction(newNestList, true, 0.0f);
@@ -271,19 +229,32 @@ namespace CardProject
             {
                 n--;
                 int k = rng.Next(n + 1);
+                Vector3 posk = chosendeck.cards[k].transform.position;
+                Vector3 posn = chosendeck.cards[n].transform.position;
                 (chosendeck.cards[k], chosendeck.cards[n]) = (chosendeck.cards[n], chosendeck.cards[k]); //swap
                 newNestList.Add(new RotateAction(chosendeck.cards[n].gameObject, false, i * DEFAULTDELAY * 1.5f, 0.5f, 0, 1, false));
+                newNestList.Add(new MoveAction(0.1f, chosendeck.cards[n].gameObject, false, i * DEFAULTDELAY * 1.5f, posn)); // SWAP INSTANTLY
                 newNestList.Add(new RotateAction(chosendeck.cards[k].gameObject, false, i * DEFAULTDELAY * 1.5f, 0.5f, 0, 1, true));
+                newNestList.Add(new MoveAction(0.1f, chosendeck.cards[k].gameObject, false, i * DEFAULTDELAY * 1.5f, posk));
                 i++;
             }
+            
+            List<Action> nNestList = new List<Action>();
+            for (int j = 0; j < chosendeck.cards.Count; j++)
+            {
+                Vector3 correctPos = PosMoveCardStackedStyle(j, chosendeck.currentPosition, chosendeck.cards.Count);
+                newNestList.Add(new MoveAction(0.1f, chosendeck.cards[j].gameObject, false, i * DEFAULTDELAY * 1.5f, correctPos));
+            }
             NestedAction nested = new NestedAction(newNestList, true, 0.0f);
+            //NestedAction nested2 = new NestedAction(nNestList, true, 0.0f);
             actionList.AddAction(nested);
+            //actionList.AddAction(nested2);
         }
         
         private Vector3 PosMoveCardStackedStyle(int i, Vector3 starterDeck, int originalDeckSize)
         {
-            int pos = originalDeckSize - i;
-            return starterDeck - new Vector3(pos * DEFAULTSTACKEDPOSOFFSET, pos * DEFAULTSTACKEDPOSOFFSET, i * DEFAULTSTACKEDZOFFSET);
+            //int pos = originalDeckSize - i;
+            return starterDeck - new Vector3(-i * DEFAULTSTACKEDPOSOFFSET, -i * DEFAULTSTACKEDPOSOFFSET, i * DEFAULTSTACKEDZOFFSET);
         }
         
         private void MoveSpreadDeck(ref List<Action> actions, DeckData chosendeck, float delayEachCard, int index)
@@ -291,8 +262,7 @@ namespace CardProject
             //List<Action> newNestList = new List<Action>();
             for (int i = 0; i < chosendeck.cards.Count; i++)
             {
-                //newNestList.Add(new MoveAction(0.25f, moveSubject, false, delayEachCard * index, chosendeck.currentPosition + Vector3.right * chosendeck.SpreadCardPosXCalculation(index)));
-                actions.Add(new MoveAction(0.25f, chosendeck.cards[i].gameObject, false, delayEachCard * index, chosendeck.SpreadCardPosXCalculation(i)));
+                actions.Add(new MoveAction(DEFAULTMOVEDURATION, chosendeck.cards[i].gameObject, false, delayEachCard * index, chosendeck.SpreadCardPosXCalculation(i)));
             }
             //NestedAction nested = new NestedAction(newNestList, true, 0.0f);
             //actionList.AddAction(nested);
@@ -302,9 +272,6 @@ namespace CardProject
         {
             
         }
-        #endregion
-        
-        #region MoveCardStuff
 
         public void CombineCardToDeck(Vector3 deckPosition)
         {
@@ -342,13 +309,7 @@ namespace CardProject
                 actionList.AddAction(rotateAction);
             }
         }
-
-        public void ShuffleTheDeck()
-        {
-            
-        }
         
-        #endregion
 
         
     }

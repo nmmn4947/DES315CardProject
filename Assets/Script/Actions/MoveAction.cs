@@ -22,7 +22,14 @@ namespace CardProject
         {
             this.destination = destination;
             subjectTransform = this.subject.transform;
-            this.speed = Vector2.Distance(subject.transform.position, destination) / duration;
+            if (duration > 0f)
+            {
+                this.speed = Vector2.Distance(subject.transform.position, destination) / duration;
+            }
+            else
+            {
+                this.speed = 0f;
+            }
         }
 
         protected override void RunOnceBeforeUpdate()
@@ -32,14 +39,14 @@ namespace CardProject
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
-            timePasses += dt;
+            if (duration <= 0f)
+            {
+                subjectTransform.position = destination;
+                return true;
+            }
+            subjectTransform.position = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBackTime());
 
-            float t = Mathf.Clamp01(timePasses / duration);
-            float smoothT = Mathf.SmoothStep(0f, 1f, t);
-
-            subjectTransform.position = Vector3.LerpUnclamped(originalPosition, destination, PositionEaseOutBack(t));
-
-            return t >= 1f;
+            return percentageDone >= 1f;
             
         }
 

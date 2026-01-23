@@ -5,7 +5,7 @@ namespace CardProject
 {
     public class DeckData
     {
-        public List<Card> cards = new List<Card>();
+        public List<Card> cards = new List<Card>(); // THIS SHOULD WORK AS A STACK, LAST IN FIRST OUT
         public Vector3 currentPosition;
 
         public DeckData(Vector3 currentPosition, DeckHoldType currentHoldType, bool isFlipDown)
@@ -42,18 +42,27 @@ namespace CardProject
             finalPos = new Vector3(finalPos.x, finalPos.y, -0.1f * index); 
             
             return finalPos;
-            /*if (index < cards.Count/2)
-            {
-                Debug.Log(currentPosition - (Vector3.right * theOffset * index));
-                return currentPosition - (Vector3.right * theOffset * index);
-            }
-            else
-            {
-                Debug.Log(currentPosition + (Vector3.right * theOffset * index));
-                return currentPosition + (Vector3.right * theOffset * index);
-            }*/
-            
-            
         }
+
+        #region FakeStack
+
+        public void Push(Card card)
+        {
+            cards.Add(card);
+        }
+
+        public void Pop()
+        {
+            if (cards.Count == 0) return;
+            cards.RemoveAt(cards.Count - 1);
+        }
+
+        public Card Peek()
+        {
+            if (cards.Count == 0) return null;
+            return cards[cards.Count - 1];
+        }
+
+        #endregion
     }
 }

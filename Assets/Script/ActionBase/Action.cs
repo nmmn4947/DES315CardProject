@@ -53,7 +53,7 @@ namespace CardProject
                 if (!UpdateLogicUntilDone(dt))
                 {
                     timePasses += dt; //update timePasses
-                    clampedTime = timePasses / duration;
+                    clampedTime = Mathf.Clamp01(timePasses / duration);
                     
                     percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
                     if (timePasses > duration)
@@ -98,6 +98,11 @@ namespace CardProject
         }
         protected float GetTimeLeft()
         {
+            if (duration >= float.MaxValue)
+            {
+                return float.MaxValue;
+            }
+            
             if (timePasses > duration)
             {
                 return 0f;

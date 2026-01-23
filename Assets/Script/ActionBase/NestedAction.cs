@@ -13,6 +13,7 @@ namespace CardProject
             foreach (Action action in actions)
             {
                 nestedList.AddAction(action);
+                
             }
         }
         public NestedAction(List<Action> actions, bool blocking, float delay) : base(blocking, delay, float.MaxValue)
