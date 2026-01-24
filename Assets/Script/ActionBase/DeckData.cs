@@ -21,6 +21,7 @@ namespace CardProject
         {
             Stacked,
             Spread,
+            UnorganizedStacked,
             None
         }
         public DeckHoldType currentHoldType;
@@ -29,7 +30,8 @@ namespace CardProject
         
         //Spread Deck Variable
         private float SpreadBorderWidth = 80.0f;
-        private float DEFAULTONECARDOFFSET = 7.68f;
+        //private float DEFAULTONECARDOFFSET = 7.68f;
+        private float DEFAULTONECARDOFFSET = 6.5f;
         private float SpreaRange = 5.0f;
 
         public Vector3 SpreadCardPosXCalculation(int index, float angleDegrees)

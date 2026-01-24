@@ -23,7 +23,6 @@ namespace CardProject
         [SerializeField] private SpriteRenderer backCardRenderer;
 
         public bool isFront;
-        //public ref bool GetIsFront(){ return ref isFront; }
         public float deckZ;
         public CardData cardData;
         
