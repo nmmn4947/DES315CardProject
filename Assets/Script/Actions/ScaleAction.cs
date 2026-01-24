@@ -23,18 +23,17 @@ namespace CardProject
 
         private bool ScaleUntilFinalScale()
         {
-            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, timePasses/duration),
-                                                      Mathf.Lerp(originalScale.y, finalScale.y, timePasses/duration), 0);
+            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, EaseOutExpo()),
+                                                      Mathf.Lerp(originalScale.y, finalScale.y, EaseOutExpo()), 0);
             
-            Vector2 newScale = subjectTransform.localScale;
-            if (Vector2.Distance(newScale, finalScale) > 0.001f)
+            // Snap to final scale when very close or time is up
+            if (percentageDone >= 1.0f || EaseOutExpo() >= 0.999f)
             {
-                return false;
-            }
-            else
-            {
+                subjectTransform.localScale = new Vector3(finalScale.x, finalScale.y, 0);
                 return true;
             }
+
+            return false;
         }
     }
 }

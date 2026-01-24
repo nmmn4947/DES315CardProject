@@ -7,12 +7,14 @@ namespace CardProject
     {
         public List<Card> cards = new List<Card>(); // THIS SHOULD WORK AS A STACK, LAST IN FIRST OUT
         public Vector3 currentPosition;
+        public float deckAngle;
 
-        public DeckData(Vector3 currentPosition, DeckHoldType currentHoldType, bool isFlipDown)
+        public DeckData(Vector3 currentPosition, DeckHoldType currentHoldType, bool isFlipDown, float deckRotation)
         {
             this.currentPosition = currentPosition;
             this.currentHoldType = currentHoldType;
             this.isFlipDown = isFlipDown;
+            this.deckAngle = deckRotation;
         }
 
         public enum DeckHoldType
@@ -26,20 +28,43 @@ namespace CardProject
         public bool isFlipDown;
         
         //Spread Deck Variable
-        public float SpreadWidth = 80.0f;
+        private float SpreadBorderWidth = 80.0f;
+        private float DEFAULTONECARDOFFSET = 7.68f;
+        private float SpreaRange = 5.0f;
 
-        public Vector3 SpreadCardPosXCalculation(int index)
+        public Vector3 SpreadCardPosXCalculation(int index, float angleDegrees)
         {
             if (cards.Count == 1)
             {
                 return currentPosition;
             }
             
-            float halfSpread = SpreadWidth / 2f;
-            float theOffset = halfSpread / cards.Count;
+            float radians = angleDegrees * Mathf.Deg2Rad;
+            
+            Vector3 spreadDirection = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0);
+            
+            float halfSpread = SpreadBorderWidth / 2f;
+            float theOffset = (halfSpread / cards.Count);
+            
+            //calculate proper offset
+            if (DEFAULTONECARDOFFSET * (cards.Count - 1) <= SpreadBorderWidth)
+            {
+                theOffset = DEFAULTONECARDOFFSET;
+            }
 
-            Vector3 finalPos = currentPosition + (Vector3.right * theOffset * (index - cards.Count / 2f));
-            finalPos = new Vector3(finalPos.x, finalPos.y, -0.1f * index); 
+            Vector3 finalPos;
+            if (cards.Count%2 == 0)
+            {
+                finalPos = currentPosition + spreadDirection * (theOffset * (index - (cards.Count / 2f) + 0.5f));
+            }
+            else
+            {
+                finalPos = currentPosition + spreadDirection * (theOffset * (index - (cards.Count / 2))); // no f
+
+            }
+            //Vector3 finalPos = currentPosition + Vector3.right * theOffset * index;
+            finalPos = new Vector3(finalPos.x, finalPos.y, -0.1f * index);
+            //Debug.Log( index + ":" + finalPos);
             
             return finalPos;
         }

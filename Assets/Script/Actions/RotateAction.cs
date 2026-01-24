@@ -25,7 +25,9 @@ namespace CardProject
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
+            //Try to use Quarternion.Lerp
             subjectTransform.localRotation = Quaternion.Euler(subjectTransform.eulerAngles.x, subjectTransform.eulerAngles.y, AngleEaseOutQuad());
+            //subjectTransform.eulerAngles = 
             return timePasses > duration;
         }
 

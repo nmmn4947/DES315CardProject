@@ -21,20 +21,21 @@ namespace CardProject
         [SerializeField] private List<Sprite> FrontCardAssets = new List<Sprite>();
         [SerializeField] private SpriteRenderer frontCardRenderer;
         [SerializeField] private SpriteRenderer backCardRenderer;
-        private bool isFront;
-        
-        public bool GetIsFront(){ return isFront; }
+
+        public bool isFront;
+        //public ref bool GetIsFront(){ return ref isFront; }
+        public float deckZ;
         public CardData cardData;
         
         private void Update()
         {
-            bool isFront = transform.localRotation.eulerAngles.y < 90f
+            isFront = transform.localRotation.eulerAngles.y < 90f
                            || transform.localRotation.eulerAngles.y > 270f;
             frontCardRenderer.sortingOrder = isFront ? 1 : 0;
-            backCardRenderer.sortingOrder  = isFront ? 0 : 1;
+            backCardRenderer.sortingOrder = isFront ? 0 : 1;
         }
 
-        // i can only be 0 - 51
+        // it can only be 0 - 51
         public void SetCardData(int i)
         {
             if (i < 13)
@@ -57,5 +58,7 @@ namespace CardProject
 
             frontCardRenderer.sprite = FrontCardAssets[i];
         }
+        
+        
     }
 }

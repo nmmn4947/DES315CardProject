@@ -44,7 +44,7 @@ namespace CardProject
                 subjectTransform.position = destination;
                 return true;
             }
-            subjectTransform.position = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBackTime());
+            subjectTransform.position = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBack());
 
             return percentageDone >= 1f;
             

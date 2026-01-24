@@ -115,13 +115,13 @@ namespace CardProject
 
         #region EasingCode
 
-        protected float EaseOutQuadTime()
+        protected float EaseOutQuad()
         {
             float t = 1f - ((1f - clampedTime) * (1f - clampedTime));
             return t;
         }
         
-        protected float EaseOutBackTime()
+        protected float EaseOutBack()
         {
             const float c1 = 1.70158f;
             const float c3 = c1 + 1f;
@@ -132,7 +132,7 @@ namespace CardProject
 
         protected float EaseOutExpo()
         {
-            return clampedTime == 1f ? 1f : 1f - Mathf.Pow(2f, -10f * clampedTime);
+            return clampedTime >= 0.99f ? 1f : 1f - Mathf.Pow(2f, -10f * clampedTime);
         }
 
         #endregion
