@@ -42,6 +42,10 @@ namespace CardProject
                 }
                 text.text = s;
             }
+            else
+            {
+                text.text = "";
+            }
         }
     }
 }

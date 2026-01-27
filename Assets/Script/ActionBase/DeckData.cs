@@ -31,7 +31,7 @@ namespace CardProject
         //Spread Deck Variable
         private float SpreadBorderWidth = 80.0f;
         //private float DEFAULTONECARDOFFSET = 7.68f;
-        private float DEFAULTONECARDPOSOFFSET = 6.5f;
+        private float DEFAULTONECARDPOSOFFSET = 6.0f;
         private float DEFAULTONECARDROTOFFSET = 5.0f;
         private float SpreaRange = 5.0f;
 
@@ -42,9 +42,31 @@ namespace CardProject
                 return currentPosition;
             }
             
-            float radians = angleDegrees * Mathf.Deg2Rad;
+            
+            float radiansY = (angleDegrees - 90) * Mathf.Deg2Rad;
+            float radians = (angleDegrees + 90) * Mathf.Deg2Rad;
+            
+            float side;
+
+            if (angleDegrees == 90f)
+            {
+                side = Mathf.Sign(-Mathf.Cos(radians));
+            }
+            else
+            {
+                side = Mathf.Sign(Mathf.Cos(radians));
+            }
             
             Vector3 spreadDirection = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0);
+            Vector3 spreadDirectionY = new Vector3(-Mathf.Sin(radians), Mathf.Cos(radians), 0);
+
+            if (angleDegrees == 180f)
+            {
+                spreadDirection = new Vector3(Mathf.Cos(radiansY), Mathf.Sin(radiansY), 0);
+                spreadDirectionY = new Vector3(-Mathf.Sin(radiansY), Mathf.Cos(radiansY), 0);
+            }
+
+            //spreadDirection += spreadDirectionY * 0.1f;
             
             float halfSpread = SpreadBorderWidth / 2f;
             float theOffset = (halfSpread / cards.Count);
@@ -55,18 +77,29 @@ namespace CardProject
                 theOffset = DEFAULTONECARDPOSOFFSET;
             }
 
+            //random
+            float randomX = Random.Range(-0.25f, 0.25f);
+            float randomY = Random.Range(-0.1f, 0.1f);
+            
+            theOffset += randomX;
+
+            float arcStrength = 0.2f;
+            arcStrength += randomY;
+            
             Vector3 finalPos;
             if (cards.Count%2 == 0)
             {
-                finalPos = currentPosition + spreadDirection * (theOffset * (index - (cards.Count / 2f) + 0.5f));
+                float t = (index - (cards.Count / 2f) + 0.5f);
+                finalPos = currentPosition + spreadDirectionY * (theOffset * t) + spreadDirection * (t * t * arcStrength * side);
             }
             else
             {
-                finalPos = currentPosition + spreadDirection * (theOffset * (index - (cards.Count / 2))); // no f
+                float t = (index - (cards.Count / 2));
+                finalPos = currentPosition + spreadDirectionY * (theOffset * t) + spreadDirection * (t * t * arcStrength * side); 
 
             }
             //Vector3 finalPos = currentPosition + Vector3.right * theOffset * index;
-            finalPos = new Vector3(finalPos.x, finalPos.y, -0.1f * index);
+            finalPos = new Vector3(finalPos.x, finalPos.y, 0.1f * index);
             //Debug.Log( index + ":" + finalPos);
             
             return finalPos;
@@ -80,7 +113,9 @@ namespace CardProject
             }
 
             float finalRotation;
-    
+
+            float randomR = Random.Range(-5f, 5f);
+            
             if (cardsCount % 2 == 0)
             {
                 finalRotation = angleDegrees + ((index - (cardsCount / 2f) + 0.5f) * DEFAULTONECARDROTOFFSET);
@@ -89,9 +124,7 @@ namespace CardProject
             {
                 finalRotation = angleDegrees + ((index - (cardsCount / 2)) * DEFAULTONECARDROTOFFSET);
             }
-
-            Debug.Log(index + ":" + angleDegrees + ":" + cardsCount + ":" + finalRotation);
-            return finalRotation;
+            return finalRotation + randomR;
         }
 
         #region FakeStack

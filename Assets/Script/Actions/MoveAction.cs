@@ -14,7 +14,7 @@ namespace CardProject
         {
             this.destination = destination;
             subjectTransform = this.subject.transform;
-            originalPosition = this.subject.transform.position;
+            originalPosition = this.subject.transform.localPosition;
             this.speed = speed;
             actionName = "Move";
         }
@@ -25,7 +25,7 @@ namespace CardProject
             subjectTransform = this.subject.transform;
             if (duration > 0f)
             {
-                this.speed = Vector2.Distance(subject.transform.position, destination) / duration;
+                this.speed = Vector2.Distance(subject.transform.localPosition, destination) / duration;
             }
             else
             {
@@ -36,17 +36,17 @@ namespace CardProject
 
         protected override void RunOnceBeforeUpdate()
         {
-            originalPosition = this.subject.transform.position;
+            originalPosition = this.subject.transform.localPosition;
         }
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
             if (duration <= 0f)
             {
-                subjectTransform.position = destination;
+                subjectTransform.localPosition = destination;
                 return true;
             }
-            subjectTransform.position = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBack());
+            subjectTransform.localPosition = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBack());
 
             return percentageDone >= 1f;
             

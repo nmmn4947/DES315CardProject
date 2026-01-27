@@ -24,6 +24,7 @@ namespace CardProject
         private DeckData player3Hand;
         private DeckData player4Hand;
         private Card currentHoverCard;
+        private Card currentPlayedCard;
         
         [SerializeField] private GameObject hand1Position;
         [SerializeField] private GameObject hand2Position;
@@ -70,7 +71,7 @@ namespace CardProject
             MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5, true,true, 0.0f);
             actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), true, 0.0f, 0.5f));
             //actionList.AddAction(new WaitAction(0.5f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(10), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), true, 0.0f, 0.5f));
             actionList.AddAction(new WaitAction(0.5f));
         }
 
@@ -215,7 +216,7 @@ namespace CardProject
                             break;
                         case DeckData.DeckHoldType.Spread:
                             
-                            newNestList.Add(new RotateAction(currentCard.gameObject, false, delayEachCard * i, 1.0f, moveToDeck.SpreadOrganicRotateCalculation(i, moveToDeck.deckAngle, amountOfCards), 1, true));
+                            newNestList.Add(new RotateAction(currentCard.gameObject, false, delayEachCard * i, 1.0f, -1 * moveToDeck.SpreadOrganicRotateCalculation(i, moveToDeck.deckAngle, amountOfCards), 1, true));
                             
                             break;
                         case DeckData.DeckHoldType.UnorganizedStacked:
@@ -481,7 +482,7 @@ namespace CardProject
                 
                 actions.Add(mv);
                 RotateAction rt = new RotateAction(chosendeck.cards[i].gameObject, false, delayEachCard * i,
-                    float.MaxValue, -1 * chosendeck.SpreadOrganicRotateCalculation(i, chosendeck.deckAngle, chosendeck.cards.Count));
+                    float.MaxValue, chosendeck.SpreadOrganicRotateCalculation(i, chosendeck.deckAngle, chosendeck.cards.Count));
                 rt.SynchronizeDurationFromThisAction(mv);
                 actions.Add(rt);
             }
@@ -505,7 +506,38 @@ namespace CardProject
                     newHoverCard = hitCard;
                 }
             }
-    
+
+            if (currentPlayedCard != null)
+            {
+                if (!actionList.IsEmpty())
+                {
+                    return;
+                }
+                else
+                {
+                    currentPlayedCard = null;
+                }
+            }
+
+            
+            if (currentHoverCard != null && Input.GetMouseButtonDown(0))
+            {
+                currentPlayedCard = currentHoverCard;
+                
+                // Do something when clicking on a card
+                actionList.AddAction(new RotateAction(currentHoverCard.gameObject, false, 0.0f, 0.5f, 0.0f));
+                SelectCardsIntoDeck(player1Hand, currentHoverCard, playDeck, 0.0f, false);
+                actionList.AddAction(new ScaleAction(currentHoverCard.gameObject, false, 0.0f, new Vector2(1.0f, 1.0f), 0.15f));
+                actionList.AddAction(new WaitAction(0.3f));
+
+                
+                //CHANGE THIS TO DEAL FOR EACH PLAYER 1 CARD AT A TIME
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), true, 0.0f, 0.5f));
+            }
+            
             // If we're hovering over a different card than before
             if (newHoverCard != currentHoverCard)
             {
@@ -523,24 +555,6 @@ namespace CardProject
         
                 // Update current hover card
                 currentHoverCard = newHoverCard;
-            }
-    
-            // Handle mouse clicks on cards
-            /*if (actionList.IsEmpty())
-            {
-                return;
-            }*/
-            if (currentHoverCard != null && Input.GetMouseButtonDown(0))
-            {
-                // Do something when clicking on a card
-                actionList.AddAction(new RotateAction(currentHoverCard.gameObject, false, 0.0f, 0.5f, 0.0f));
-                SelectCardsIntoDeck(player1Hand, currentHoverCard, playDeck, 0.0f, false);
-                
-                //CHANGE THIS TO DEAL FOR EACH PLAYER 1 CARD AT A TIME
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), true, 0.0f, 0.5f));
             }
         }
 
