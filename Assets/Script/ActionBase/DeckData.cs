@@ -31,7 +31,8 @@ namespace CardProject
         //Spread Deck Variable
         private float SpreadBorderWidth = 80.0f;
         //private float DEFAULTONECARDOFFSET = 7.68f;
-        private float DEFAULTONECARDOFFSET = 6.5f;
+        private float DEFAULTONECARDPOSOFFSET = 6.5f;
+        private float DEFAULTONECARDROTOFFSET = 5.0f;
         private float SpreaRange = 5.0f;
 
         public Vector3 SpreadCardPosXCalculation(int index, float angleDegrees)
@@ -49,9 +50,9 @@ namespace CardProject
             float theOffset = (halfSpread / cards.Count);
             
             //calculate proper offset
-            if (DEFAULTONECARDOFFSET * (cards.Count - 1) <= SpreadBorderWidth)
+            if (DEFAULTONECARDPOSOFFSET * (cards.Count - 1) <= SpreadBorderWidth)
             {
-                theOffset = DEFAULTONECARDOFFSET;
+                theOffset = DEFAULTONECARDPOSOFFSET;
             }
 
             Vector3 finalPos;
@@ -69,6 +70,28 @@ namespace CardProject
             //Debug.Log( index + ":" + finalPos);
             
             return finalPos;
+        }
+        
+        public float SpreadOrganicRotateCalculation(int index, float angleDegrees, int cardsCount)
+        {
+            if (cardsCount == 1)
+            {
+                return angleDegrees;
+            }
+
+            float finalRotation;
+    
+            if (cardsCount % 2 == 0)
+            {
+                finalRotation = angleDegrees + ((index - (cardsCount / 2f) + 0.5f) * DEFAULTONECARDROTOFFSET);
+            }
+            else
+            {
+                finalRotation = angleDegrees + ((index - (cardsCount / 2)) * DEFAULTONECARDROTOFFSET);
+            }
+
+            Debug.Log(index + ":" + angleDegrees + ":" + cardsCount + ":" + finalRotation);
+            return finalRotation;
         }
 
         #region FakeStack

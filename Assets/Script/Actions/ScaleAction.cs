@@ -14,6 +14,7 @@ namespace CardProject
             this.duration = duration;
             subjectTransform = subject.transform;
             originalScale = subjectTransform.localScale;
+            actionName = "Scale";
         }
 
         protected override bool UpdateLogicUntilDone(float dt)

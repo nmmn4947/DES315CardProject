@@ -12,6 +12,7 @@ namespace CardProject
         public CallBackAction(System.Action actionToCallBack, bool blocking, float delay, float duration) : base(blocking, delay, duration)
         {
             this.actionToCallBack = actionToCallBack;
+            actionName = "CallBack";
         }
 
         protected override bool UpdateLogicUntilDone(float dt)

@@ -7,7 +7,7 @@ namespace CardProject
     {
         private ActionList nestedList = new ActionList();
 
-        public NestedAction(bool blocking, float delay) : base(blocking, delay, float.MaxValue) { }
+        public NestedAction(bool blocking, float delay) : base(blocking, delay, float.MaxValue) { actionName = "Nested"; }
         public NestedAction(Action[] actions, bool blocking, float delay) : base(blocking, delay, float.MaxValue)
         {
             foreach (Action action in actions)
@@ -15,6 +15,7 @@ namespace CardProject
                 nestedList.AddAction(action);
                 
             }
+            actionName = "Nested";
         }
         public NestedAction(List<Action> actions, bool blocking, float delay) : base(blocking, delay, float.MaxValue)
         {
@@ -22,6 +23,7 @@ namespace CardProject
             {
                 nestedList.AddAction(action);
             }
+            actionName = "Nested";
         }
 
         public void AddAction(Action action)
@@ -37,6 +39,11 @@ namespace CardProject
                 return true;
             }
             return false;
+        }
+
+        public ActionList GetActionList()
+        {
+            return nestedList;
         }
     }
 }

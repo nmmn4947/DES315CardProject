@@ -11,12 +11,22 @@ namespace CardProject
         public float delay;
         public float timePasses = 0.0f;
         public float duration;
-        public float percentageDone;  // 0 - 1
+        public float percentageDone; //Basically percentageDone
+        public string actionName;
+        
+        // NOTE TO SELF, TO FIX THE SCALE PROBLEM WHEN CLICK, CAN TRY USING GROUPING, NOT JUST NESTING
+        
+        enum EasingType
+        {
+            EaseOutQuad,
+            EaseOutBack,
+            EaseOutExpo
+        };
+        EasingType _easingType;
         
         protected GameObject subject;
 
         private bool runEnterOnce = false;
-        private float clampedTime;
         protected Action(bool blocking, float delay, float duration)
         {
             this.subject = null;
@@ -53,9 +63,9 @@ namespace CardProject
                 if (!UpdateLogicUntilDone(dt))
                 {
                     timePasses += dt; //update timePasses
-                    clampedTime = Mathf.Clamp01(timePasses / duration);
+                    percentageDone = Mathf.Clamp01(timePasses / duration);
                     
-                    percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
+                    //percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
                     if (timePasses > duration)
                     {
                         percentageDone = 1.0f;
@@ -96,6 +106,7 @@ namespace CardProject
             }
             return false;
         }
+        
         protected float GetTimeLeft()
         {
             if (duration >= float.MaxValue)
@@ -117,7 +128,7 @@ namespace CardProject
 
         protected float EaseOutQuad()
         {
-            float t = 1f - ((1f - clampedTime) * (1f - clampedTime));
+            float t = 1f - ((1f - percentageDone) * (1f - percentageDone));
             return t;
         }
         
@@ -126,13 +137,13 @@ namespace CardProject
             const float c1 = 1.70158f;
             const float c3 = c1 + 1f;
             
-            float ret = 1 + c3 * Mathf.Pow(clampedTime - 1, 3) + c1 * Mathf.Pow(clampedTime - 1, 2);
+            float ret = 1 + c3 * Mathf.Pow(percentageDone - 1, 3) + c1 * Mathf.Pow(percentageDone - 1, 2);
             return ret;
         }
 
         protected float EaseOutExpo()
         {
-            return clampedTime >= 0.99f ? 1f : 1f - Mathf.Pow(2f, -10f * clampedTime);
+            return percentageDone >= 0.99f ? 1f : 1f - Mathf.Pow(2f, -10f * percentageDone);
         }
 
         #endregion

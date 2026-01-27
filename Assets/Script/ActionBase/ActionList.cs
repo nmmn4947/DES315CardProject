@@ -47,5 +47,10 @@ namespace CardProject
             return actions.Count;
         }
 
+        public List<Action> GetTheList()
+        {
+            return actions;
+        }
+
     }
 }

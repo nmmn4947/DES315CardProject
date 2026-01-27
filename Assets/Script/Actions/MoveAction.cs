@@ -16,6 +16,7 @@ namespace CardProject
             subjectTransform = this.subject.transform;
             originalPosition = this.subject.transform.position;
             this.speed = speed;
+            actionName = "Move";
         }
         
         public MoveAction(float duration, GameObject subject, bool blocking, float delay, Vector3 destination) : base(subject,blocking, delay, duration)
@@ -30,6 +31,7 @@ namespace CardProject
             {
                 this.speed = 0f;
             }
+            actionName = "Move";
         }
 
         protected override void RunOnceBeforeUpdate()
