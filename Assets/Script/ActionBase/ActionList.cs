@@ -52,5 +52,10 @@ namespace CardProject
             return actions;
         }
 
+        public void ClearActions()
+        {
+            actions.Clear();
+        }
+        
     }
 }

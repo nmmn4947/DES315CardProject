@@ -69,7 +69,7 @@ namespace CardProject
             }
 
             MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5, true,true, 0.0f);
-            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), true, 0.0f, 0.25f));
             //actionList.AddAction(new WaitAction(0.5f));
             actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), true, 0.0f, 0.5f));
             actionList.AddAction(new WaitAction(0.5f));
@@ -88,6 +88,8 @@ namespace CardProject
             {
                 MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count,DEFAULTDELAY * 5, true, true, 0.0f);
             }
+
+            ShuffleDrawDeckViaInput();
         }
         
         #region SpawningCard
@@ -585,6 +587,15 @@ namespace CardProject
                 
             }*/
             actionList.AddAction(new WaitAction(0.5f));
+        }
+
+        private void ShuffleDrawDeckViaInput()
+        {
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                actionList.ClearActions();
+                ShuffleThisDeck(drawDeck);
+            }
         }
     }
 }
