@@ -6,6 +6,7 @@ namespace CardProject
     {
         public WaitAction(float duration) : base(true, 0.0f, duration)
         {
+            actionName = "Wait";
         }
 
         protected override bool UpdateLogicUntilDone(float dt)
@@ -15,6 +16,16 @@ namespace CardProject
                 return true;
             }
             return false;
+        }
+
+        public override string GetDebugText()
+        {
+            string s = "";
+            s += "Wait";
+            s += " ";
+            s += percentageDone.ToString("F2");
+            s += "\n";
+            return s;
         }
     }
 }

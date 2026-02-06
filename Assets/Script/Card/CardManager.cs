@@ -8,12 +8,11 @@ using Random = System.Random;
 
 namespace CardProject
 {
-    public class CardManager : MonoBehaviour
+    public class CardManager : ActionListManager
     {
         public Card cardPrefab;
         
         private List<Card> cards = new List<Card>();
-        private ActionList actionList = new ActionList();
         private List<DeckData> deckData = new List<DeckData>();
         private DeckData freeDeck = new DeckData(Vector3.zero, DeckData.DeckHoldType.None, false, 0);
         private DeckData playDeck;
@@ -25,7 +24,7 @@ namespace CardProject
         private DeckData player4Hand;
         private Card currentHoverCard;
         private Card currentPlayedCard;
-        
+
         [SerializeField] private GameObject hand1Position;
         [SerializeField] private GameObject hand2Position;
         [SerializeField] private GameObject hand3Position;
@@ -34,11 +33,6 @@ namespace CardProject
         [SerializeField] private GameObject playDeckPosition;
         [SerializeField] private GameObject discardDeckPosition;
 
-        public ActionList GetActionList()
-        {
-            return actionList;
-        }
-        
         private float DEFAULTDELAY = 0.01f;
         private float DEFAULTSTACKEDPOSOFFSET = 0.05f;
         private float DEFAULTSTACKEDZOFFSET = 0.11f;
@@ -47,6 +41,7 @@ namespace CardProject
         
         private void Start()
         {
+            
             playDeck = new DeckData(playDeckPosition.transform.position, DeckData.DeckHoldType.Stacked, false, 0);
             drawDeck = new DeckData(drawDeckPosition.transform.position, DeckData.DeckHoldType.Stacked, true, 0);
             discardDeck = new DeckData(discardDeckPosition.transform.position, DeckData.DeckHoldType.UnorganizedStacked, false, 67);
@@ -69,27 +64,27 @@ namespace CardProject
             }
 
             MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5, true,true, 0.0f);
-            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), true, 0.0f, 0.25f));
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f, 0.25f));
             //actionList.AddAction(new WaitAction(0.5f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), nameof(DealCardsToAllPlayer), true, 0.0f, 0.5f));
             actionList.AddAction(new WaitAction(0.5f));
         }
 
         private void Update()
         {
             CardUpdateOnHand(player1Hand);
-            actionList.RunActions(Time.deltaTime);
+            actionList.RunActions(Time.deltaTime * timeMultiplier);
             if (Input.GetKeyDown(KeyCode.R))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
 
-            if (Input.GetKeyDown(KeyCode.S))
+            /*if (Input.GetKeyDown(KeyCode.S))
             {
                 MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count,DEFAULTDELAY * 5, true, true, 0.0f);
-            }
+            }*/
 
-            ShuffleDrawDeckViaInput();
+            //ShuffleDrawDeckViaInput();
         }
         
         #region SpawningCard
@@ -104,6 +99,7 @@ namespace CardProject
         private Card SpawnCard(int i, Vector3 startPosition)
         {
             GameObject card1 = Instantiate(cardPrefab.gameObject, startPosition, Quaternion.identity);
+            card1.name = "Card" + i.ToString();
             Card c1 = card1.GetComponent<Card>();
             c1.SetCardData(i);
             return c1;
@@ -534,10 +530,10 @@ namespace CardProject
 
                 
                 //CHANGE THIS TO DEAL FOR EACH PLAYER 1 CARD AT A TIME
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), true, 0.0f, 0.5f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
+                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), nameof(MoveCardsIntoDeck), true, 0.0f, 0.5f));
             }
             
             // If we're hovering over a different card than before

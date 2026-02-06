@@ -25,6 +25,7 @@ namespace CardProject
                 rightMultiplier = -1;
             }
             angleCalculation = goalAngle + (loopCountMultiplier * 360.0f);
+            actionName = "Rotate";
         }
         
         public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle) : base(subject, blocking, delay, duration)

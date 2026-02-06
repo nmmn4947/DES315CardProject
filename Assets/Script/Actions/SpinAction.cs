@@ -18,6 +18,8 @@ namespace CardProject
             {
                 rightMultiplier = -1;
             }
+            
+            actionName = "Spin";
         }
 
         protected override bool UpdateLogicUntilDone(float dt)

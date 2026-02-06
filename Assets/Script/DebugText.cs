@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -5,42 +8,51 @@ namespace CardProject
 {
     public class DebugText : MonoBehaviour
     {
-        [SerializeField] private CardManager cm;
-        private TextMeshProUGUI text;
+        [SerializeField] private ActionListManager actionListObject;
+        [SerializeField] private TextMeshProUGUI text;
+        [SerializeField] private int lineOffset;
         private ActionList actionList;
-        void Start()
+        private int amountOfActionsOnScreen;
+        private string leftOver;
+        private int currentLine;
+
+        private void Start()
         {
-            text = GetComponent<TextMeshProUGUI>();
+            amountOfActionsOnScreen = (int)(this.gameObject.GetComponent<RectTransform>().sizeDelta.y/lineOffset) - 1;
+            actionList = actionListObject.actionList;
         }
 
-        // Update is called once per frame
         void Update()
         {
-            actionList = cm.GetActionList();
             if (!actionList.IsEmpty())
             {
                 string s = "";
-                for (int i = 0; i < actionList.GetActionListCount(); i++)
+                int i = 0;
+                while (i <= amountOfActionsOnScreen)
                 {
-                    Action currAction = actionList.GetTheList()[i];
-                    s += actionList.GetTheList()[i].actionName;
-                    s += " ";
-                    s += actionList.GetTheList()[i].percentageDone.ToString("F2");
-                    s += "\n";
-                    if (currAction.actionName == "Nested")
+                    if (actionList.GetActionListCount() <= 0 || i >= actionList.GetActionListCount())
                     {
-                        NestedAction nestedAction = currAction as NestedAction;
-                        for (int y = 0; y < nestedAction.GetActionList().GetActionListCount(); y++)
-                        {
-                            s += "  ";
-                            s += nestedAction.GetActionList().GetTheList()[i].actionName;
-                            s += " ";
-                            s += nestedAction.GetActionList().GetTheList()[i].percentageDone.ToString("F2");
-                            s += "\n";
-                        }
+                        break;
+                    }
+                    Action currAction = actionList.GetTheList()[i];
+                    s += currAction.GetDebugText();
+                    i++;
+                    if (currAction is NestedAction)
+                    {
+                        NestedAction n = currAction as NestedAction;
+                        i += n.GetActionList().GetActionListCount() - 1;
                     }
                 }
-                text.text = s;
+                
+                var lines = s.Split('\n');
+                string finalString = string.Join("\n", lines.Take(amountOfActionsOnScreen));
+                if (lines.Length - amountOfActionsOnScreen > 0)
+                {
+                    finalString += "\nThere is ";
+                    finalString += lines.Length - amountOfActionsOnScreen;
+                    finalString += " Action(s) left.";
+                }
+                text.text = finalString;
             }
             else
             {

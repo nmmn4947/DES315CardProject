@@ -99,7 +99,7 @@ namespace CardProject
         
         private bool RunDelayUntilDone(float dt)
         {
-            delay -= Time.deltaTime;
+            delay -= dt;
             if (delay <= 0.0f)
             {
                 return true;
@@ -122,6 +122,25 @@ namespace CardProject
             {
                 return duration - timePasses;
             }
+        }
+
+        public virtual string GetDebugText()
+        {
+            string s = "";
+            s += actionName;
+            s += " [";
+            if (subject != null)
+            {
+                s += subject.name;
+            }
+            else
+            {
+                s += "null";
+            }
+            s += "] ";
+            s += percentageDone.ToString("F2");
+            s += "\n";
+            return s;
         }
 
         #region EasingCode

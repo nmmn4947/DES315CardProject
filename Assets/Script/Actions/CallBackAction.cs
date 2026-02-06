@@ -6,12 +6,14 @@ namespace CardProject
     public class CallBackAction : Action
     {
         private System.Action actionToCallBack;
+        private string nameOfFunc;
         private ActionList actionList;
         private int index;
         
-        public CallBackAction(System.Action actionToCallBack, bool blocking, float delay, float duration) : base(blocking, delay, duration)
+        public CallBackAction(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay, float duration) : base(blocking, delay, duration)
         {
             this.actionToCallBack = actionToCallBack;
+            this.nameOfFunc = nameOfFunc;
             actionName = "CallBack";
         }
 
@@ -19,6 +21,16 @@ namespace CardProject
         {
             actionToCallBack();
             return true;
+        }
+
+        public override string GetDebugText()
+        {
+            string s = "";
+            s += "CallBack(";
+            s += nameOfFunc;
+            s += ")";
+            s += "\n";
+            return s;
         }
     }
 }

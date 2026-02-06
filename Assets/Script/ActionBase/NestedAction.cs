@@ -45,5 +45,18 @@ namespace CardProject
         {
             return nestedList;
         }
+
+        public override string GetDebugText()
+        {
+            string s = "";
+            s += actionName;
+            s += "\n";
+            for (int i = 0; i < nestedList.GetActionListCount(); i++)
+            {
+                s += " ";
+                s += nestedList.GetTheList()[i].GetDebugText();
+            }
+            return s;
+        }
     }
 }
