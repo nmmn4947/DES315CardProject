@@ -3,12 +3,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Napadol.Tools;
 
 namespace CardProject
 {
     public class ActionListManager : MonoBehaviour
     {
         public ActionList actionList;
+        [HideInInspector]
         public float timeMultiplier = 1;
         protected float averageLerpTime = 0.5f;
         
@@ -35,7 +37,6 @@ namespace CardProject
                 yield return null;
             }
         }
-
         private float EaseOutCirc(float t)
         {
             return Mathf.Sqrt(1 - Mathf.Pow(t - 1, 2));

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CardProject
@@ -8,7 +9,7 @@ namespace CardProject
         private Transform subjectTransform;
         private Vector2 originalScale;
         
-        public ScaleAction(GameObject subject, bool blocking, float delay, Vector2 finalScale, float duration) : base(subject, blocking, delay, duration)
+        public ScaleAction(GameObject subject, bool blocking, float delay, Vector2 finalScale, float duration, Func<float ,float> easingFunc) : base(subject, blocking, delay, duration, easingFunc)
         {
             this.finalScale = finalScale;
             this.duration = duration;
@@ -21,14 +22,14 @@ namespace CardProject
         {
             return ScaleUntilFinalScale();
         }
-
+        //EaseOutExpo
         private bool ScaleUntilFinalScale()
         {
-            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, EaseOutExpo()),
-                                                      Mathf.Lerp(originalScale.y, finalScale.y, EaseOutExpo()), 0);
+            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, easingFunction(percentageDone)),
+                                                      Mathf.Lerp(originalScale.y, finalScale.y, easingFunction(percentageDone)), 0);
             
             // Snap to final scale when very close or time is up
-            if (percentageDone >= 1.0f || EaseOutExpo() >= 0.999f)
+            if (percentageDone >= 1.0f || easingFunction(percentageDone) >= 0.999f)
             {
                 subjectTransform.localScale = new Vector3(finalScale.x, finalScale.y, 0);
                 return true;

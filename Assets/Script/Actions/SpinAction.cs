@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CardProject
@@ -9,7 +10,7 @@ namespace CardProject
         private Transform subjectTransform;
         private int rightMultiplier = 1;
         
-        public SpinAction(GameObject subject, bool blocking, float delay, float rotateSpeed, float duration, bool isRight) : base(subject,blocking, delay, duration)
+        public SpinAction(GameObject subject, bool blocking, float delay, float rotateSpeed, float duration, bool isRight, Func<float, float> easingFunc) : base(subject,blocking, delay, duration, easingFunc)
         {
             this.rotateSpeed = rotateSpeed;
             isRotateRight = isRight;

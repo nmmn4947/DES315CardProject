@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.nmmn4947.napadol-easing-unity-package": {
+      "version": "https://github.com/nmmn4947/NapadolEasingUnityPackage.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b9a8104683c0dc92a5f30f4f9c31f671f681f2fc"
+    },
     "com.unity.2d.animation": {
       "version": "10.2.1",
       "depth": 1,
@@ -143,7 +150,7 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.38",
+      "version": "3.0.39",
       "depth": 0,
       "source": "registry",
       "dependencies": {

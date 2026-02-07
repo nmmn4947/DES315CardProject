@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CardProject
@@ -11,7 +12,7 @@ namespace CardProject
         private float startY;
         private float endY;
         
-        public FlipAction(GameObject subject, bool blocking, float delay, float duration) :  base(subject, blocking, delay, duration)
+        public FlipAction(GameObject subject, bool blocking, float delay, float duration, Func<float, float> easingFunc) :  base(subject, blocking, delay, duration, easingFunc)
         {
             subjectTransform = subject.transform;
             actionName = "Flip";
@@ -45,9 +46,8 @@ namespace CardProject
         
         private bool FlippingUntilDone()
         {
-            float clamp = Mathf.Clamp01(timePasses/duration);
-            subjectTransform.localRotation = Quaternion.Lerp(startRotation, endRotation, clamp); // linear
-            return (timePasses/duration) >= 1f;
+            subjectTransform.localRotation = Quaternion.Lerp(startRotation, endRotation, easingFunction(percentageDone)); // linear
+            return percentageDone >= 1f;
         }
     }
 }

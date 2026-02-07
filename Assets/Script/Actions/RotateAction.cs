@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,7 +18,7 @@ namespace CardProject
         private float totalAngleDelta;
         private Quaternion targetRotation;
         
-        public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle, int loopCountMultiplier, bool isRight) : base(subject, blocking, delay, duration)
+        public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle, int loopCountMultiplier, bool isRight, Func<float, float> easingFunc) : base(subject, blocking, delay, duration, easingFunc)
         {
             subjectTransform = subject.transform;
             if (isRight)
@@ -28,22 +29,22 @@ namespace CardProject
             actionName = "Rotate";
         }
         
-        public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle) : base(subject, blocking, delay, duration)
+        public RotateAction(GameObject subject, bool blocking, float delay, float duration, float goalAngle, Func<float, float> easingFunc) : base(subject, blocking, delay, duration, easingFunc)
         {
             subjectTransform = subject.transform;
             angleCalculation = goalAngle;
             optimized = true;
         }
-
+        //EaseOutExpo
         protected override bool UpdateLogicUntilDone(float dt)
         {
             //Try to use Quarternion.Lerp
             if (optimized)
             {
-                float maxDegreesDelta = startingAngle + (totalAngleDelta * EaseOutExpo());
+                float maxDegreesDelta = startingAngle + (totalAngleDelta * easingFunction(percentageDone));
                 //subjectTransform.localRotation = Quaternion.RotateTowards(subjectTransform.localRotation, targetRotation, maxDegreesDelta);
                 //float currentAngle = Mathf.Lerp(startingAngle, startingAngle + totalAngleDelta, EaseOutExpo());
-                float currentAngle = startingAngle + (totalAngleDelta * EaseOutExpo());
+                float currentAngle = startingAngle + (totalAngleDelta * easingFunction(percentageDone));
                 subjectTransform.localRotation = Quaternion.Euler(subjectTransform.localEulerAngles.x, subjectTransform.localEulerAngles.y, currentAngle);
                 return timePasses > duration;
             }
@@ -63,7 +64,7 @@ namespace CardProject
 
         private float AngleEaseOutQuad()
         {
-            float currentAngle = Mathf.Lerp(startingAngle, finalAngle, EaseOutExpo());
+            float currentAngle = Mathf.Lerp(startingAngle, finalAngle, easingFunction(percentageDone));
             return currentAngle;
         }
 

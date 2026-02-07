@@ -2,7 +2,8 @@
     "name": "CardProject.Runtime",
     "rootNamespace": "CardProject",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:1b64c9a0401a8e14bb46ffbde68aaa7a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

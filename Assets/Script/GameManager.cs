@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace CardProject
         
         private ActionList cardActionList;
         private ActionList uiActionList;
-        private bool cardIsPaused = false;  
+        private bool cardIsPaused = false;
         
         void Awake()
         {
@@ -27,11 +28,15 @@ namespace CardProject
             instance = this;
         }
 
+        private void Start()
+        {
+            //cardManager.trickEnded += TrickEndedHandling;
+        }
+
         void Update()
         {
             DebugInput();
             HandlePausingCardManager();
-
         }
         private void DebugInput()
         {
@@ -57,6 +62,8 @@ namespace CardProject
                 }
             }
         }
+        
+        private void HandleUpdatingHUD(){}
     }
     
 

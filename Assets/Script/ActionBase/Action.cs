@@ -12,17 +12,11 @@ namespace CardProject
         public float timePasses = 0.0f;
         public float duration;
         public float percentageDone; //Basically percentageDone
+        public float easingTime;
         public string actionName;
         
         // NOTE TO SELF, TO FIX THE SCALE PROBLEM WHEN CLICK, CAN TRY USING GROUPING, NOT JUST NESTING
-        
-        enum EasingType
-        {
-            EaseOutQuad,
-            EaseOutBack,
-            EaseOutExpo
-        };
-        EasingType _easingType;
+        protected Func<float, float> easingFunction;
         
         protected GameObject subject;
 
@@ -35,12 +29,13 @@ namespace CardProject
             this.duration = duration;
         }
         
-        protected Action(GameObject subject, bool blocking, float delay, float duration)
+        protected Action(GameObject subject, bool blocking, float delay, float duration, Func<float, float> easingFunction)
         {
             this.subject = subject;
             this.blocking = blocking;
             this.delay = delay;
             this.duration = duration;
+            this.easingFunction = easingFunction;
         }
 
         static public void SynchronizeDurationFirstToSecond(Action action1, Action action2)
@@ -64,6 +59,7 @@ namespace CardProject
                 {
                     timePasses += dt; //update timePasses
                     percentageDone = Mathf.Clamp01(timePasses / duration);
+                    easingTime = easingFunction?.Invoke(percentageDone) ?? percentageDone; Debug.LogError("easingFunction is null");
                     
                     //percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
                     if (timePasses > duration)

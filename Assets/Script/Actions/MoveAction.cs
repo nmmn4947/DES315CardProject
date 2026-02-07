@@ -10,7 +10,7 @@ namespace CardProject
         private Vector2 originalPosition;
         private float speed;
 
-        public MoveAction(GameObject subject, bool blocking, float delay, float speed, Vector3 destination) : base(subject,blocking, delay, Vector2.Distance(subject.transform.position, destination)/speed)
+        public MoveAction(GameObject subject, bool blocking, float delay, float speed, Vector3 destination, Func<float, float> easingFunc) : base(subject,blocking, delay, Vector2.Distance(subject.transform.position, destination)/speed, easingFunc)
         {
             this.destination = destination;
             subjectTransform = this.subject.transform;
@@ -19,7 +19,7 @@ namespace CardProject
             actionName = "Move";
         }
         
-        public MoveAction(float duration, GameObject subject, bool blocking, float delay, Vector3 destination) : base(subject,blocking, delay, duration)
+        public MoveAction(float duration, GameObject subject, bool blocking, float delay, Vector3 destination, Func<float, float> easingFunc) : base(subject,blocking, delay, duration, easingFunc)
         {
             this.destination = destination;
             subjectTransform = this.subject.transform;
@@ -38,7 +38,7 @@ namespace CardProject
         {
             originalPosition = this.subject.transform.localPosition;
         }
-
+        
         protected override bool UpdateLogicUntilDone(float dt)
         {
             if (duration <= 0f)
@@ -46,7 +46,7 @@ namespace CardProject
                 subjectTransform.localPosition = destination;
                 return true;
             }
-            subjectTransform.localPosition = Vector3.LerpUnclamped(originalPosition, destination, EaseOutBack());
+            subjectTransform.localPosition = Vector3.LerpUnclamped(originalPosition, destination, easingFunction(percentageDone)); //EASE OUT BACK
 
             return percentageDone >= 1f;
             
