@@ -14,6 +14,10 @@ namespace CardProject
         public Card cardPrefab;
 
         public System.Action trickEnded;
+        public System.Action cardSetUpDone;
+        public System.Action player2Played;
+        public System.Action player3Played;
+        public System.Action player4Played;
         
         #region CardVariables
         private List<Card> cards = new List<Card>();
@@ -66,13 +70,14 @@ namespace CardProject
             }
 
             MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5, true,true, 0.0f);
-            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f, 0.25f));
-            //actionList.AddAction(new WaitAction(0.5f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), nameof(DealCardsToAllPlayer), true, 0.0f, 0.5f));
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), nameof(DealCardsToAllPlayer), true, 0.0f));
+            actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokeCardSetUpDone(), nameof(InvokeCardSetUpDone), true, 0.0f
+            ), nameof(CallACallBack), true, 0.0f));
             actionList.AddAction(new WaitAction(0.5f));
         }
 
-        private void Update()
+        protected override void Update()
         {
             CardUpdateOnHand(player1Hand);
             actionList.RunActions(Time.deltaTime * timeMultiplier);
@@ -80,13 +85,6 @@ namespace CardProject
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
-
-            /*if (Input.GetKeyDown(KeyCode.S))
-            {
-                MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count,DEFAULTDELAY * 5, true, true, 0.0f);
-            }*/
-
-            //ShuffleDrawDeckViaInput();
         }
         
         #region SpawningCard
@@ -527,15 +525,19 @@ namespace CardProject
                 actionList.AddAction(new RotateAction(currentHoverCard.gameObject, false, 0.0f, 0.5f, 0.0f, Easing.EaseOutExpo));
                 SelectCardsIntoDeck(player1Hand, currentHoverCard, playDeck, 0.0f, false);
                 actionList.AddAction(new ScaleAction(currentHoverCard.gameObject, false, 0.0f, new Vector2(1.0f, 1.0f), 0.15f, Easing.EaseOutExpo));
-                actionList.AddAction(new WaitAction(0.3f));
+                //actionList.AddAction(new WaitAction(0.3f));
 
                 
                 //CHANGE THIS TO DEAL FOR EACH PLAYER 1 CARD AT A TIME
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f, 1.0f));
-                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), nameof(MoveCardsIntoDeck), true, 0.0f, 0.5f));
-                actionList.AddAction(new CallBackAction(() => CallACallBack(() => TrickHasEnd(), nameof(TrickHasEnd), false, 0.0f, 0.0f), nameof(TrickHasEnd), false, 0.0f, 0.0f));
+                actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokePlayer2Played(), nameof(InvokePlayer2Played), false, 0.0f), nameof(CallACallBack), false, 0.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player2Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f));
+                actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokePlayer3Played(), nameof(InvokePlayer3Played), false, 0.0f), nameof(CallACallBack), false, 0.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player3Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f));
+                actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokePlayer4Played(), nameof(InvokePlayer4Played), false, 0.0f), nameof(CallACallBack), false, 0.0f));
+                actionList.AddAction(new CallBackAction(() => MoveAnIndexOfCardIntoDeck(player4Hand, UnityEngine.Random.Range(0, player2Hand.cards.Count), playDeck, 0.0f, false), nameof(MoveAnIndexOfCardIntoDeck), true, 0.0f));
+                //actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokeTrickHasEnd(), nameof(InvokeTrickHasEnd), false, 0.0f), nameof(CallACallBack), false, 0.0f));
+                actionList.AddAction(new CallBackAction(() => InvokeTrickHasEnd(), nameof(CallACallBack), false, 0.0f));
+                actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, discardDeck, playDeck.cards.Count, 0.2f, true, true, 0.2f), nameof(MoveCardsIntoDeck), true, 0.5f));
             }
             
             // If we're hovering over a different card than before
@@ -558,14 +560,39 @@ namespace CardProject
             }
         }
 
-        private void TrickHasEnd()
+        #region Invokers
+
+        private void InvokePlayer2Played()
+        {
+            player2Played?.Invoke();
+        }
+        
+        private void InvokePlayer3Played()
+        {
+            player3Played?.Invoke();
+        }
+        
+        private void InvokePlayer4Played()
+        {
+            player4Played?.Invoke();
+        }
+        
+        private void InvokeTrickHasEnd()
         {
             trickEnded?.Invoke();
         }
 
-        private void CallACallBack(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay, float duration)
+        private void InvokeCardSetUpDone()
         {
-            actionList.AddAction(new CallBackAction(actionToCallBack, nameOfFunc, blocking, delay, duration));
+            cardSetUpDone?.Invoke();
+        }
+
+        #endregion
+
+
+        private void CallACallBack(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay)
+        {
+            actionList.AddAction(new CallBackAction(actionToCallBack, nameOfFunc, blocking, delay));
         }
         
         private void DealCardsToAllPlayer(int amount)
@@ -574,26 +601,6 @@ namespace CardProject
             MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
             MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
             MoveCardsIntoDeck(drawDeck, player4Hand, amount, DEFAULTDELAY, true, false, 0.07f * 3);
-            /*for (int i = 0; i < amount * 4; i++)
-            {
-                DeckData currentdeck = player1Hand;
-                switch (i % 4)
-                {
-                    case 0:
-                        currentdeck = player1Hand;
-                        break;
-                    case 1:
-                        currentdeck = player2Hand;
-                        break;
-                    case 2:
-                        currentdeck = player3Hand;
-                        break;
-                    case 3:
-                        currentdeck = player4Hand;
-                        break;
-                }
-                
-            }*/
             actionList.AddAction(new WaitAction(0.5f));
         }
 
@@ -604,6 +611,15 @@ namespace CardProject
                 actionList.ClearActions();
                 ShuffleThisDeck(drawDeck);
             }
+        }
+
+        public bool AllHandsHaveNoCards()
+        {
+            if (player1Hand.cards.Count <= 0 && player2Hand.cards.Count <= 0 && player3Hand.cards.Count <= 0 && player4Hand.cards.Count <= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

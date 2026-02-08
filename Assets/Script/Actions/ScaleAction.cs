@@ -18,10 +18,18 @@ namespace CardProject
             actionName = "Scale";
         }
 
+        protected override void RunOnceBeforeUpdate()
+        {
+            originalScale = subjectTransform.localScale;
+        }
+        
         protected override bool UpdateLogicUntilDone(float dt)
         {
             return ScaleUntilFinalScale();
         }
+
+        
+
         //EaseOutExpo
         private bool ScaleUntilFinalScale()
         {

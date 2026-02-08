@@ -10,7 +10,7 @@ namespace CardProject
         private ActionList actionList;
         private int index;
         
-        public CallBackAction(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay, float duration) : base(blocking, delay, duration)
+        public CallBackAction(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay) : base(blocking, delay, 0.0f)
         {
             this.actionToCallBack = actionToCallBack;
             this.nameOfFunc = nameOfFunc;

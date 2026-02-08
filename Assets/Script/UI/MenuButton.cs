@@ -16,8 +16,13 @@ namespace CardProject
 
         public void SetButtonText(string text)
         {
-            
-            rectTransform.sizeDelta = new Vector2(40 + text.Length * buttonOffset, 60);
+            tmp.text = text;
+            int offset = 40;
+            if (text.Length >= 10)
+            {
+                offset = 60;
+            }
+            rectTransform.sizeDelta = new Vector2(offset + text.Length * buttonOffset, 60);
         }
 
         public void OnPointerDown(PointerEventData eventData)

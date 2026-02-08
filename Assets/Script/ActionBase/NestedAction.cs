@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Napadol.Tools;
 
 namespace CardProject
 {
@@ -16,6 +17,7 @@ namespace CardProject
                 
             }
             actionName = "Nested";
+            easingFunction = Easing.EaseLinear;
         }
         public NestedAction(List<Action> actions, bool blocking, float delay) : base(blocking, delay, float.MaxValue)
         {
@@ -24,6 +26,7 @@ namespace CardProject
                 nestedList.AddAction(action);
             }
             actionName = "Nested";
+            easingFunction = Easing.EaseLinear;
         }
 
         public void AddAction(Action action)

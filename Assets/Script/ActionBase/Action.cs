@@ -59,7 +59,11 @@ namespace CardProject
                 {
                     timePasses += dt; //update timePasses
                     percentageDone = Mathf.Clamp01(timePasses / duration);
-                    easingTime = easingFunction?.Invoke(percentageDone) ?? percentageDone; Debug.LogError("easingFunction is null");
+                    easingTime = easingFunction?.Invoke(percentageDone) ?? percentageDone;
+                    if (easingFunction == null)
+                    {
+                        Debug.LogError("easingFunction is null : " + actionName);
+                    }
                     
                     //percentageDone = timePasses / duration; //Updating percentageDone 0 - 1.
                     if (timePasses > duration)

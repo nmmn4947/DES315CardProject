@@ -9,6 +9,13 @@ namespace CardProject
         [SerializeField] private TextMeshProUGUI _score;
         [SerializeField] private TextMeshProUGUI _cardsLeft;
 
+        public void SetUpText(string name, int score, int cardN)
+        {
+            EditNameText(name);
+            EditScoreNumber(score);
+            EditCardLeftNumber(cardN);
+        }
+        
         public void EditNameText(string text)
         {
             _nameText.text = text;
@@ -21,7 +28,7 @@ namespace CardProject
         }
         public void EditCardLeftNumber(int n)
         {
-            string s = "CardLeft : ";
+            string s = "Cards : ";
             s += n;
             _cardsLeft.text = s;
         }

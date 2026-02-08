@@ -19,6 +19,11 @@ namespace CardProject
             actionList = new ActionList();
         }
 
+        protected virtual void Update()
+        {
+            actionList.RunActions(Time.deltaTime * timeMultiplier);
+        }
+
         public void LerpTimeMultiplier(float targetTime)
         {
             StartCoroutine(LerpingMultiplier(targetTime));

@@ -11,6 +11,7 @@ namespace CardProject
         [SerializeField] private ActionListManager actionListObject;
         [SerializeField] private TextMeshProUGUI text;
         [SerializeField] private int lineOffset;
+        [SerializeField] private RectTransform canvasRect;
         private ActionList actionList;
         private int amountOfActionsOnScreen;
         private string leftOver;
@@ -18,7 +19,7 @@ namespace CardProject
 
         private void Start()
         {
-            amountOfActionsOnScreen = (int)(this.gameObject.GetComponent<RectTransform>().sizeDelta.y/lineOffset) - 1;
+            amountOfActionsOnScreen = (int)(canvasRect.sizeDelta.y/lineOffset) - 1;
             actionList = actionListObject.actionList;
         }
 

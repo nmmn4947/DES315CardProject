@@ -1,3 +1,4 @@
+using Napadol.Tools;
 using UnityEngine;
 
 namespace CardProject
@@ -7,6 +8,7 @@ namespace CardProject
         public WaitAction(float duration) : base(true, 0.0f, duration)
         {
             actionName = "Wait";
+            easingFunction = Easing.EaseLinear;
         }
 
         protected override bool UpdateLogicUntilDone(float dt)
