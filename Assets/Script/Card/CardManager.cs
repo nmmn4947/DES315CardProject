@@ -50,6 +50,13 @@ namespace CardProject
         private float DEFAULTSTACKEDZOFFSET = 0.11f;
         private float DEFAULTFLIPDURATION = 0.5f;
         private float DEFAULTMOVEDURATION = 0.25f;
+
+        private bool isResetting = false;
+
+        public void SetResettingBool(bool b)
+        {
+            isResetting = b;
+        }
         
         private void Start()
         {
@@ -163,6 +170,11 @@ namespace CardProject
             Action.SynchronizeDurationFirstToSecond(moveAction, scaleAction);   
         }
         #endregion
+
+        public void ResetTheGame()
+        {
+            
+        }
         
         public void MoveCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard, bool willRotate, bool nestedBlock, float nestedDelay)
         {
@@ -488,6 +500,11 @@ namespace CardProject
 
         private void CardUpdateOnHand(DeckData data)
         {
+            if (isResetting)
+            {
+                return;
+            }
+            
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D raycastHit2D = Physics2D.Raycast(mouseRay.origin, mouseRay.direction);
     

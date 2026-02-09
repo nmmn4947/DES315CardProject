@@ -723,6 +723,10 @@ MonoBehaviour:
   cardManager: {fileID: 1643487941}
   uiManager: {fileID: 1373750617}
   debugTexts: {fileID: 169533070}
+  currentPlaySpeed: 1
+  currentPlayerNumber: 4
+  scoreToWin: 0
+  currentTrick: 0
 --- !u!4 &821598988
 Transform:
   m_ObjectHideFlags: 0
@@ -1330,6 +1334,7 @@ MonoBehaviour:
   cardManager: {fileID: 1643487941}
   menuButtonPrefab: {fileID: 5253626892546365491, guid: 4644d217142a5be49bb1b3471dd9337b, type: 3}
   playerHUDTextPrefab: {fileID: 3723683175828645402, guid: 70f79a2dc6c62044a8e151bc638d2248, type: 3}
+  trickCountTextPrefab: {fileID: 8005997402902581495, guid: 74c13c0477f78524d9643cf010998f71, type: 3}
   menuRoot: {fileID: 635167216}
   hudRoot: {fileID: 303739704}
   hudPlayer1Object: {fileID: 909218187}
@@ -1341,6 +1346,11 @@ MonoBehaviour:
   player3HUD: {fileID: 0}
   player4HUD: {fileID: 0}
   pausedBG: {fileID: 1650695143}
+  ResumeButton: {fileID: 0}
+  PlaySpeedButton: {fileID: 0}
+  HandNumberButton: {fileID: 0}
+  HandSizeButton: {fileID: 0}
+  QuitButton: {fileID: 0}
 --- !u!1 &1406738689
 GameObject:
   m_ObjectHideFlags: 0

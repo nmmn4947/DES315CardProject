@@ -29,7 +29,7 @@ namespace CardProject
         {
             if (cvNull) return true;
             
-            canvasGroup.alpha = Mathf.Lerp(startingAlpha, targetAlpha, easingFunction(percentageDone));
+            canvasGroup.alpha = Mathf.Lerp(startingAlpha, targetAlpha, easingTime);
             
             return (timePasses > duration);
         }

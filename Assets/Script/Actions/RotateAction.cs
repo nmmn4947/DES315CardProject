@@ -41,10 +41,10 @@ namespace CardProject
             //Try to use Quarternion.Lerp
             if (optimized)
             {
-                float maxDegreesDelta = startingAngle + (totalAngleDelta * easingFunction(percentageDone));
+                float maxDegreesDelta = startingAngle + (totalAngleDelta * easingTime);
                 //subjectTransform.localRotation = Quaternion.RotateTowards(subjectTransform.localRotation, targetRotation, maxDegreesDelta);
                 //float currentAngle = Mathf.Lerp(startingAngle, startingAngle + totalAngleDelta, EaseOutExpo());
-                float currentAngle = startingAngle + (totalAngleDelta * easingFunction(percentageDone));
+                float currentAngle = startingAngle + (totalAngleDelta * easingTime);
                 subjectTransform.localRotation = Quaternion.Euler(subjectTransform.localEulerAngles.x, subjectTransform.localEulerAngles.y, currentAngle);
                 return timePasses > duration;
             }
@@ -64,7 +64,7 @@ namespace CardProject
 
         private float AngleEaseOutQuad()
         {
-            float currentAngle = Mathf.Lerp(startingAngle, finalAngle, easingFunction(percentageDone));
+            float currentAngle = Mathf.Lerp(startingAngle, finalAngle, easingTime);
             return currentAngle;
         }
 

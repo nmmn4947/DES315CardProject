@@ -21,6 +21,29 @@ namespace CardProject
         private int p2Score = 0;
         private int p3Score = 0;
         private int p4Score = 0;
+        private int winner = -1;
+
+        public enum PlaySpeedState
+        {
+            Slow,
+            Normal, 
+            Fast,
+            Crazy
+        }
+        public PlaySpeedState currentPlaySpeed = PlaySpeedState.Normal;
+        private float currentPlaySpeedMultiplier = 1.0f;
+
+        private float slowPlaySpeed = 0.5f;
+        private float normalPlaySpeed = 1.0f;
+        private float fastPlaySpeed = 2.0f;
+        private float crazyPlaySpeed = 5.0f;
+        
+        public int currentPlayerNumber = 4;
+        
+        public int scoreToWin = 3; // first to this score wins
+        
+        [HideInInspector]
+        public int currentTrick = 0;
         
         void Awake()
         {
@@ -42,11 +65,16 @@ namespace CardProject
             cardManager.trickEnded += TrickEndsHandling;
         }
 
+        
+        
         void Update()
         {
             DebugInput();
-            HandlePausingCardManager();
             HandleUpdatingHUD();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                TogglePausing();
+            }
         }
         private void DebugInput()
         {
@@ -56,20 +84,17 @@ namespace CardProject
             }
         }
 
-        private void HandlePausingCardManager()
+        public void TogglePausing()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            cardIsPaused = !cardIsPaused;
+            if (cardIsPaused)
             {
-                if (!cardIsPaused)
-                {
-                    cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(0f);
-                    cardIsPaused = true;
-                }
-                else
-                {
-                    cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(1f);
-                    cardIsPaused = false;
-                }
+                cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(0f);
+                uiManager.TogglePauseMenu();
+            }
+            else
+            {
+                cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(currentPlaySpeedMultiplier);
                 uiManager.TogglePauseMenu();
             }
         }
@@ -96,20 +121,81 @@ namespace CardProject
                     uiManager.PlayerGetScore(uiManager.player4HUD, p4Score);
                     break;
             }
-
-            if (cardManager.AllHandsHaveNoCards())
+            
+            if (WinCheck())
             {
                 //Game Ends
                 //THIS PLAYER WINS!!
+                uiManager.TriggerTrickCountWINAnimation(winner);
                 //RESHUFFLE START THE GAME AGAIN
+                cardManager.ResetTheGame();
             }
+            else
+            {
+            currentTrick++;
+            uiManager.TriggerTrickCountAnimation(currentTrick);
+            }
+
+
         }
 
+        private bool WinCheck()
+        {
+            bool check = p1Score >= scoreToWin || p2Score >= scoreToWin || p3Score >= scoreToWin || p4Score >= scoreToWin;
+            if (check){
+                if (p1Score >= scoreToWin)
+                {
+                    winner = 0;
+                }
+                else if (p2Score <= scoreToWin)
+                {
+                    winner = 1;
+                }
+                else if (p3Score <= scoreToWin)
+                {
+                    winner = 2;
+                }
+                else if (p4Score <= scoreToWin)
+                {
+                    winner = 3;
+                }
+            }
+            
+            return check;
+        }
+        
         private void HandleUpdatingHUD()
         {
             uiManager.player1HUD.EditCardLeftNumber(cardManager.player1Hand.cards.Count);
         }
 
+        public void ChangePlaySpeed()
+        {
+            if (currentPlaySpeed == PlaySpeedState.Crazy)
+            {
+                currentPlaySpeed = PlaySpeedState.Slow;
+            }
+            else
+            {
+                currentPlaySpeed++;
+            }
+            
+            switch (currentPlaySpeed)
+            {
+                case PlaySpeedState.Slow:
+                    currentPlaySpeedMultiplier = slowPlaySpeed;
+                    break;
+                case PlaySpeedState.Normal:
+                    currentPlaySpeedMultiplier = normalPlaySpeed;
+                    break;
+                case PlaySpeedState.Fast:
+                    currentPlaySpeedMultiplier = fastPlaySpeed;
+                    break;
+                case PlaySpeedState.Crazy:
+                    currentPlaySpeedMultiplier = crazyPlaySpeed;
+                    break;
+            }
+        }
 
         #region EvilCode
 

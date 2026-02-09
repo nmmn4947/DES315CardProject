@@ -46,7 +46,7 @@ namespace CardProject
                 subjectTransform.localPosition = destination;
                 return true;
             }
-            subjectTransform.localPosition = Vector3.LerpUnclamped(originalPosition, destination, easingFunction(percentageDone)); //EASE OUT BACK
+            subjectTransform.localPosition = Vector3.LerpUnclamped(originalPosition, destination, easingTime); //EASE OUT BACK
 
             return percentageDone >= 1f;
             

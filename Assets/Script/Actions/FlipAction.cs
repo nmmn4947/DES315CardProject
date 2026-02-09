@@ -46,7 +46,7 @@ namespace CardProject
         
         private bool FlippingUntilDone()
         {
-            subjectTransform.localRotation = Quaternion.Lerp(startRotation, endRotation, easingFunction(percentageDone)); // linear
+            subjectTransform.localRotation = Quaternion.Lerp(startRotation, endRotation, easingTime);
             return percentageDone >= 1f;
         }
     }

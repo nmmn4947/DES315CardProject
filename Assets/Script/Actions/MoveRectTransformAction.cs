@@ -57,13 +57,24 @@ namespace CardProject
 
         protected override bool UpdateLogicUntilDone(float dt)
         {
+            
             if (worldPosMove)
             {
-                _rectTransform.position = Vector3.LerpUnclamped(_startPosition, _endPosition, easingFunction(percentageDone));
+                if (duration <= 0.001f)
+                {
+                    _rectTransform.position = _endPosition;
+                    return true;
+                }
+                _rectTransform.position = Vector3.LerpUnclamped(_startPosition, _endPosition, easingTime);
             }
             else
             {
-                _rectTransform.localPosition = Vector3.LerpUnclamped(_startPosition, _endPosition, easingFunction(percentageDone));
+                if (duration <= 0.001f)
+                {
+                    _rectTransform.localPosition = _endPosition;
+                    return true;
+                }
+                _rectTransform.localPosition = Vector3.LerpUnclamped(_startPosition, _endPosition, easingTime);
             }
             
             return (timePasses > duration);

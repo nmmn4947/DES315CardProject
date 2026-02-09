@@ -1,5 +1,6 @@
 using System;
 using Napadol.Tools;
+using TMPro;
 using UnityEngine;
 
 namespace CardProject
@@ -9,13 +10,14 @@ namespace CardProject
         [SerializeField] private CardManager cardManager;
         [SerializeField] private MenuButton menuButtonPrefab;
         [SerializeField] private PlayerSetHUD playerHUDTextPrefab;
+        [SerializeField] private GameObject trickCountTextPrefab; // is a part of HUD
         [SerializeField] private GameObject menuRoot;
         [SerializeField] private GameObject hudRoot;
         [SerializeField] private GameObject hudPlayer1Object;
         [SerializeField] private GameObject hudPlayer2Object;
         [SerializeField] private GameObject hudPlayer3Object;
         [SerializeField] private GameObject hudPlayer4Object;
-
+        
         #region HUDs
         [HideInInspector]
         public PlayerSetHUD player1HUD;
@@ -27,16 +29,28 @@ namespace CardProject
         public PlayerSetHUD player4HUD;
         
         private ActionList cardActionList;
+        
+        private TextMeshProUGUI trickCountText;
+        private GameObject trickCountObj;
+        private Vector3 offScreenRight;
+        private Vector3 offScreenCenter;
+        private Vector3 offScreenLeft;
+        
         #endregion
 
         #region Menus
         
         [SerializeField] private GameObject pausedBG;
-        private MenuButton ResumeButton;
-        private MenuButton PlaySpeedButton;
-        private MenuButton HandNumberButton;
-        private MenuButton HandSizeButton;
-        private MenuButton QuitButton;
+        [HideInInspector]
+        public MenuButton ResumeButton;
+        [HideInInspector]
+        public MenuButton PlaySpeedButton;
+        [HideInInspector]
+        public MenuButton HandNumberButton;
+        [HideInInspector]
+        public MenuButton HandSizeButton;
+        [HideInInspector]
+        public MenuButton QuitButton;
         private Camera cam;
         private Vector3 outSideOfCanvas;
         private float offsetBetweenButtons = 70f;
@@ -49,7 +63,7 @@ namespace CardProject
         private void Start()
         {
             cardActionList = cardManager.actionList;
-
+            
             #region MenuButtons
             cam = Camera.main;
             outSideOfCanvas = cam.ViewportToScreenPoint(new Vector3(0.5f, -0.25f, 0));
@@ -57,15 +71,18 @@ namespace CardProject
             //Generate MenuButtons
             ResumeButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             ResumeButton.GetComponent<RectTransform>().position = outSideOfCanvas;
+            ResumeButton._onUp += GameManager.instance.TogglePausing;
             ResumeButton.SetButtonText("Resume");
             
             PlaySpeedButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             PlaySpeedButton.GetComponent<RectTransform>().position = outSideOfCanvas;
-            PlaySpeedButton.SetButtonText("PlaySpeed");
+            PlaySpeedButton._onUp += GameManager.instance.ChangePlaySpeed;
+            PlaySpeedButton._onUp += ChangeSpeedText;
+            PlaySpeedButton.SetButtonText("PlaySpeed : Normal");
             
             HandNumberButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             HandNumberButton.GetComponent<RectTransform>().position = outSideOfCanvas;
-            HandNumberButton.SetButtonText("HandNumber");
+            HandNumberButton.SetButtonText("HandNumber : 4");
             
             HandSizeButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             HandSizeButton.GetComponent<RectTransform>().position = outSideOfCanvas;
@@ -85,6 +102,14 @@ namespace CardProject
             player3HUD.SetUpText("Joseph", 0, 7);
             player4HUD = Instantiate(playerHUDTextPrefab, hudPlayer4Object.transform).GetComponent<PlayerSetHUD>();
             player4HUD.SetUpText("Andy", 0, 7);
+            
+            trickCountObj = Instantiate(trickCountTextPrefab, hudRoot.transform);
+            trickCountText = trickCountObj.GetComponentInChildren<TextMeshProUGUI>();
+            offScreenRight = cam.ViewportToScreenPoint(new Vector3(1.5f, 0.5f, 0.0f));
+            offScreenCenter = cam.ViewportToScreenPoint(new Vector3(0.5f, 0.5f, 0.0f));
+            offScreenLeft = cam.ViewportToScreenPoint(new Vector3(-0.5f, 0.5f, 0.0f));
+            trickCountObj.GetComponent<RectTransform>().position = offScreenRight;
+            
             #endregion
 
         }
@@ -103,7 +128,7 @@ namespace CardProject
         {
             playerHUD.EditScoreNumber(playerNewScore);
             cardActionList.AddAction(new ScaleAction(playerHUD.gameObject, true, 0.0f, new Vector2(3, 3), 0.4f, Easing.EaseOutBounce));//Scale up
-            cardActionList.AddAction(new WaitAction(0.2f));
+            cardActionList.AddAction(new WaitAction(0.5f));
             cardActionList.AddAction(new ScaleAction(playerHUD.gameObject, true, 0.0f, new Vector2(1, 1), 0.25f, Easing.EaseOutBack));//Scale down
         }
 
@@ -133,6 +158,42 @@ namespace CardProject
                 actionList.AddAction(new MoveRectTransformAction(true, newPos, QuitButton.gameObject, false, 0.0f, 0.1f, Easing.EaseOutBack));
                 actionList.AddAction(new CVGroupFadeAction(pausedBG, false, 0.0f, 0.25f, Easing.EaseLinear, 0.0f));
             }
+        }
+
+        private void ChangeSpeedText()
+        {
+            switch (GameManager.instance.currentPlaySpeed)
+            {
+                case GameManager.PlaySpeedState.Slow:
+                    PlaySpeedButton.SetButtonText("PlaySpeed : Slow");
+                    break;
+                case GameManager.PlaySpeedState.Normal:
+                    PlaySpeedButton.SetButtonText("PlaySpeed : Normal");
+                    break;
+                case GameManager.PlaySpeedState.Fast:
+                    PlaySpeedButton.SetButtonText("PlaySpeed : Fast");
+                    break;
+                case GameManager.PlaySpeedState.Crazy:
+                    PlaySpeedButton.SetButtonText("PlaySpeed : Crazy");
+                    break;
+            }
+
+            
+        }
+
+        public void TriggerTrickCountAnimation(int count)
+        {
+            trickCountText.text = "Trick : " + count;
+            
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenCenter, trickCountObj, true, 0.0f, 0.5f, Easing.EaseOutSine));
+            cardActionList.AddAction(new WaitAction(0.5f));
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenLeft, trickCountObj, true, 0.0f, 0.5f, Easing.EaseInCirc));
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenRight, trickCountObj, true, 0.0f, 0.0f, Easing.EaseLinear));
+        }
+        
+        public void TriggerTrickCountWINAnimation(int winnerPlayer)
+        {
+            
         }
     }
 }

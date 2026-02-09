@@ -33,11 +33,11 @@ namespace CardProject
         //EaseOutExpo
         private bool ScaleUntilFinalScale()
         {
-            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, easingFunction(percentageDone)),
-                                                      Mathf.Lerp(originalScale.y, finalScale.y, easingFunction(percentageDone)), 0);
+            subjectTransform.localScale = new Vector3(Mathf.Lerp(originalScale.x, finalScale.x, easingTime),
+                                                      Mathf.Lerp(originalScale.y, finalScale.y, easingTime), 0);
             
             // Snap to final scale when very close or time is up
-            if (percentageDone >= 1.0f || easingFunction(percentageDone) >= 0.999f)
+            if (percentageDone >= 1.0f || easingTime >= 0.999f)
             {
                 subjectTransform.localScale = new Vector3(finalScale.x, finalScale.y, 0);
                 return true;
