@@ -173,23 +173,21 @@ namespace CardProject
 
         public void ResetTheGame()
         {
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count, DEFAULTDELAY * 5, true, false, 0.0f), 
                 nameof(MoveCardsIntoDeck), false, 0.0f));
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, drawDeck, playDeck.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, drawDeck, playDeck.cards.Count, DEFAULTDELAY * 5, true, false, 0.1f), 
                 nameof(MoveCardsIntoDeck), false, 0.0f));
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player1Hand, drawDeck, player1Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player1Hand, drawDeck, player1Hand.cards.Count, DEFAULTDELAY * 5, true, false, 0.2f), 
                 nameof(MoveCardsIntoDeck), false, 0.0f));
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player2Hand, drawDeck, player2Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player2Hand, drawDeck, player2Hand.cards.Count, DEFAULTDELAY * 5, true, false, 0.3f), 
                 nameof(MoveCardsIntoDeck), false, 0.0f));
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player3Hand, drawDeck, player3Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player3Hand, drawDeck, player3Hand.cards.Count, DEFAULTDELAY * 5, true, false, 0.4f), 
                 nameof(MoveCardsIntoDeck), false, 0.0f));
-            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player4Hand, drawDeck, player4Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player4Hand, drawDeck, player4Hand.cards.Count, DEFAULTDELAY * 5, true, true, 0.5f), 
                 nameof(MoveCardsIntoDeck), true, 0.0f));
-            
-            actionList.AddAction(new WaitAction(0.1f));
-            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.2f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize),
-                nameof(DealCardsToAllPlayer), true, 0.0f));
+            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f), nameof(CallACallBack), true, 0.2f));
+            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f),
+                nameof(CallACallBack), true, 0.0f));
         }
         
         public void MoveCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard, bool willRotate, bool nestedBlock, float nestedDelay)
@@ -375,6 +373,7 @@ namespace CardProject
 
         public void ShuffleThisDeck(DeckData chosendeck)
         {
+            //actionList.AddAction(new WaitAction(0.0f));
             switch (chosendeck.currentHoldType)
             {
                 case DeckData.DeckHoldType.Stacked:

@@ -40,7 +40,7 @@ namespace CardProject
         
         public int currentPlayerNumber = 4;
         
-        private int scoreToWin = 3; // first to this score wins
+        private int scoreToWin = 2; // first to this score wins
         
         [HideInInspector]
         public int currentTrick = 0;
@@ -136,7 +136,13 @@ namespace CardProject
                 //THIS PLAYER WINS!!
                 uiManager.TriggerTrickCountWINAnimation(winner);
                 //RESHUFFLE START THE GAME AGAIN
+                uiManager.FadeOutHUD(false);
                 cardManager.ResetTheGame();
+                cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.ResetHUD(), nameof(uiManager.ResetHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
+                cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.FadeInHUD(),nameof(uiManager.FadeInHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
+                //RESET DATA
+                ResetGameData();
+                
             }
             else
             {
@@ -150,6 +156,16 @@ namespace CardProject
             }
 
 
+        }
+
+        private void ResetGameData()
+        {
+            currentTrick = 0;
+            p1Score = 0;
+            p2Score = 0;
+            p3Score = 0;
+            p4Score = 0;
+            winner = -1;
         }
 
         private bool WinCheck()

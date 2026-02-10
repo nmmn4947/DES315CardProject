@@ -56,6 +56,11 @@ namespace CardProject
         {
             actions.Clear();
         }
+
+        public void CallACallBack(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay)
+        {
+            this.AddAction(new CallBackAction(actionToCallBack, nameOfFunc, blocking, delay));
+        }
         
     }
 }

@@ -95,14 +95,15 @@ namespace CardProject
             #endregion
             #region HUDs
             //Generate HUDS
+            int amount = GameManager.instance.handSize;
             player1HUD = Instantiate(playerHUDTextPrefab, hudPlayer1Object.transform).GetComponent<PlayerSetHUD>();
-            player1HUD.SetUpText("You", 0, 7);
+            player1HUD.SetUpText("You", 0, amount);
             player2HUD = Instantiate(playerHUDTextPrefab, hudPlayer2Object.transform).GetComponent<PlayerSetHUD>();
-            player2HUD.SetUpText("Dylan", 0, 7);
+            player2HUD.SetUpText("Dylan", 0, amount);
             player3HUD = Instantiate(playerHUDTextPrefab, hudPlayer3Object.transform).GetComponent<PlayerSetHUD>();
-            player3HUD.SetUpText("Joseph", 0, 7);
+            player3HUD.SetUpText("Joseph", 0, amount);
             player4HUD = Instantiate(playerHUDTextPrefab, hudPlayer4Object.transform).GetComponent<PlayerSetHUD>();
-            player4HUD.SetUpText("Andy", 0, 7);
+            player4HUD.SetUpText("Andy", 0, amount);
             
             trickCountObj = Instantiate(trickCountTextPrefab, hudRoot.transform);
             trickCountText = trickCountObj.GetComponentInChildren<TextMeshProUGUI>();
@@ -114,9 +115,23 @@ namespace CardProject
             #endregion
         }
 
+        public void ResetHUD()
+        {
+            int amount = GameManager.instance.handSize;
+            player1HUD.SetUpText("You", 0, amount);
+            player2HUD.SetUpText("Dylan", 0, amount);
+            player3HUD.SetUpText("Joseph", 0, amount);
+            player4HUD.SetUpText("Andy", 0, amount);
+        }
+
         public void FadeOutHUD()
         {
             cardActionList.AddAction(new CVGroupFadeAction(hudRoot, true, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 0.0f));
+        }
+        
+        public void FadeOutHUD(bool blocking)
+        {
+            cardActionList.AddAction(new CVGroupFadeAction(hudRoot, blocking, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 0.0f));
         }
         
         public void FadeInHUD()
