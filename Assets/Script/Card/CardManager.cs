@@ -78,7 +78,7 @@ namespace CardProject
 
             MoveCardsIntoDeck(freeDeck, drawDeck, 52,DEFAULTDELAY * 5, true,true, 0.0f);
             actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(7), nameof(DealCardsToAllPlayer), true, 0.0f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f));
             actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokeCardSetUpDone(), nameof(InvokeCardSetUpDone), true, 0.0f
             ), nameof(CallACallBack), true, 0.0f));
             actionList.AddAction(new WaitAction(0.5f));
@@ -173,11 +173,32 @@ namespace CardProject
 
         public void ResetTheGame()
         {
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(playDeck, drawDeck, playDeck.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player1Hand, drawDeck, player1Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player2Hand, drawDeck, player2Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player3Hand, drawDeck, player3Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player4Hand, drawDeck, player4Hand.cards.Count, DEFAULTDELAY, true, false, 0.0f), 
+                nameof(MoveCardsIntoDeck), true, 0.0f));
             
+            actionList.AddAction(new WaitAction(0.1f));
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.2f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize),
+                nameof(DealCardsToAllPlayer), true, 0.0f));
         }
         
         public void MoveCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard, bool willRotate, bool nestedBlock, float nestedDelay)
         {
+            if (amountOfCards <= 0)
+            {
+                return;
+            }
+            
             if (amountOfCards > moveFromDeck.cards.Count)
             {
                 Debug.LogError("Amount of cards is more than Deck");
@@ -612,7 +633,7 @@ namespace CardProject
             actionList.AddAction(new CallBackAction(actionToCallBack, nameOfFunc, blocking, delay));
         }
         
-        private void DealCardsToAllPlayer(int amount)
+        public void DealCardsToAllPlayer(int amount)
         {
             MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
             MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
@@ -637,6 +658,13 @@ namespace CardProject
                 return true;
             }
             return false;
+        }
+
+        public void RefilDrawDeckWithDiscardPileAfterHandOut()
+        { 
+            MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count, DEFAULTDELAY, true, true, 0.0f);
+            actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f));
         }
     }
 }

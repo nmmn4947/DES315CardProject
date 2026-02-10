@@ -72,7 +72,7 @@ namespace CardProject
             ResumeButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             ResumeButton.GetComponent<RectTransform>().position = outSideOfCanvas;
             ResumeButton._onUp += GameManager.instance.TogglePausing;
-            ResumeButton.SetButtonText("Resume");
+            ResumeButton.SetButtonText("Play");
             
             PlaySpeedButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             PlaySpeedButton.GetComponent<RectTransform>().position = outSideOfCanvas;
@@ -90,6 +90,7 @@ namespace CardProject
             
             QuitButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             QuitButton.GetComponent<RectTransform>().position = outSideOfCanvas;
+            QuitButton._onUp += ExitApplication;
             QuitButton.SetButtonText("Quit");
             #endregion
             #region HUDs
@@ -111,7 +112,6 @@ namespace CardProject
             trickCountObj.GetComponent<RectTransform>().position = offScreenRight;
             
             #endregion
-
         }
 
         public void FadeOutHUD()
@@ -193,7 +193,34 @@ namespace CardProject
         
         public void TriggerTrickCountWINAnimation(int winnerPlayer)
         {
+            string s = "";
+            switch (winnerPlayer)
+            {
+                case 0:
+                    s = "You";
+                    break;
+                case 1:
+                    s = "Dylan";
+                    break;
+                case 2:
+                    s = "Joseph";
+                    break;
+                case 3:
+                    s = "Andy";
+                    break;
+            }
             
+            trickCountText.text = s + " WIN!";
+            
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenCenter, trickCountObj, true, 0.0f, 0.5f, Easing.EaseOutSine));
+            cardActionList.AddAction(new WaitAction(0.5f));
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenLeft, trickCountObj, true, 0.0f, 0.5f, Easing.EaseInCirc));
+            cardActionList.AddAction(new MoveRectTransformAction(true, offScreenRight, trickCountObj, true, 0.0f, 0.0f, Easing.EaseLinear));
+        }
+
+        private void ExitApplication()
+        {
+            Application.Quit();
         }
     }
 }

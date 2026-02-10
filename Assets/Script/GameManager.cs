@@ -40,10 +40,15 @@ namespace CardProject
         
         public int currentPlayerNumber = 4;
         
-        public int scoreToWin = 3; // first to this score wins
+        private int scoreToWin = 3; // first to this score wins
         
         [HideInInspector]
         public int currentTrick = 0;
+
+        [HideInInspector]
+        public int handSize = 7;
+
+        private bool runOnce = false;
         
         void Awake()
         {
@@ -63,12 +68,15 @@ namespace CardProject
             cardManager.player3Played += HandleUpdatingHUDPlayer3;
             cardManager.player4Played += HandleUpdatingHUDPlayer4;
             cardManager.trickEnded += TrickEndsHandling;
+            cardActionList = cardManager.actionList;
         }
 
         
         
         void Update()
         {
+            if (!runOnce){ TogglePausing(); runOnce = true; }
+            
             DebugInput();
             HandleUpdatingHUD();
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -132,8 +140,13 @@ namespace CardProject
             }
             else
             {
-            currentTrick++;
-            uiManager.TriggerTrickCountAnimation(currentTrick);
+                currentTrick++;
+                cardActionList.AddAction(new CallBackAction(() => uiManager.TriggerTrickCountAnimation(currentTrick), nameof(uiManager.TriggerTrickCountAnimation), true, 0.0f));
+
+                if (cardManager.AllHandsHaveNoCards())
+                {
+                    cardActionList.AddAction(new CallBackAction(() => cardManager.RefilDrawDeckWithDiscardPileAfterHandOut(), nameof(cardManager.RefilDrawDeckWithDiscardPileAfterHandOut), true, 0.0f));
+                }
             }
 
 
@@ -147,20 +160,19 @@ namespace CardProject
                 {
                     winner = 0;
                 }
-                else if (p2Score <= scoreToWin)
+                else if (p2Score >= scoreToWin)
                 {
                     winner = 1;
                 }
-                else if (p3Score <= scoreToWin)
+                else if (p3Score >= scoreToWin)
                 {
                     winner = 2;
                 }
-                else if (p4Score <= scoreToWin)
+                else if (p4Score >= scoreToWin)
                 {
                     winner = 3;
                 }
             }
-            
             return check;
         }
         

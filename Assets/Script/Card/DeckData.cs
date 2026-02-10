@@ -42,7 +42,6 @@ namespace CardProject
                 return currentPosition;
             }
             
-            
             float radiansY = (angleDegrees - 90) * Mathf.Deg2Rad;
             float radians = (angleDegrees + 90) * Mathf.Deg2Rad;
             
