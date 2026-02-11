@@ -52,7 +52,8 @@ namespace CardProject
         private float DEFAULTMOVEDURATION = 0.25f;
 
         private bool isResetting = false;
-
+        private bool isStarted = false;
+        
         public void SetResettingBool(bool b)
         {
             isResetting = b;
@@ -67,6 +68,8 @@ namespace CardProject
             player2Hand = new DeckData(hand2Position.transform.position, DeckData.DeckHoldType.Spread, true, -90);
             player3Hand = new DeckData(hand3Position.transform.position, DeckData.DeckHoldType.Spread, true, 180);
             player4Hand = new DeckData(hand4Position.transform.position, DeckData.DeckHoldType.Spread, true, 90);
+
+            //trickEnded += HandleHandNumber;
             
             //AllCardinit
             for (int i = 0; i < 52; i++)
@@ -82,6 +85,13 @@ namespace CardProject
             actionList.AddAction(new CallBackAction(() => CallACallBack(() => InvokeCardSetUpDone(), nameof(InvokeCardSetUpDone), true, 0.0f
             ), nameof(CallACallBack), true, 0.0f));
             actionList.AddAction(new WaitAction(0.5f));
+            actionList.AddAction(new CallBackAction(() => InvokeTrickStarted(), nameof(InvokeTrickStarted), true, 0.0f));
+        }
+
+        private void InvokeTrickStarted()
+        {
+            trickEnded?.Invoke();
+            isStarted = true;
         }
 
         protected override void Update()
@@ -185,9 +195,11 @@ namespace CardProject
                 nameof(MoveCardsIntoDeck), false, 0.0f));
             actionList.AddAction(new CallBackAction(() => MoveCardsIntoDeck(player4Hand, drawDeck, player4Hand.cards.Count, DEFAULTDELAY * 5, true, true, 0.5f), 
                 nameof(MoveCardsIntoDeck), true, 0.0f));
-            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f), nameof(CallACallBack), true, 0.2f));
-            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f),
-                nameof(CallACallBack), true, 0.0f));
+            /*actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), false, 0.7f));
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), false, 2.0f));*/
+            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), false, 1.5f), nameof(CallACallBack), false, 0.0f));
+            actionList.AddAction(new CallBackAction(() => CallACallBack(()=>DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), false, 3.0f),
+                nameof(CallACallBack), false, 0.0f));
         }
         
         public void MoveCardsIntoDeck(DeckData moveFromDeck, DeckData moveToDeck, int amountOfCards, float delayEachCard, bool willRotate, bool nestedBlock, float nestedDelay)
@@ -368,6 +380,10 @@ namespace CardProject
 
         private void MoveAnIndexOfCardIntoDeck(DeckData moveFromDeck, int index, DeckData moveToDeck, float delayEachCard, bool willRotate)
         {
+            if (index >= moveFromDeck.cards.Count)
+            {
+                return;
+            }
             SelectCardsIntoDeck(moveFromDeck,moveFromDeck.cards[index], moveToDeck, delayEachCard, willRotate);
         }
 
@@ -483,7 +499,6 @@ namespace CardProject
             switch (chosendeck.currentHoldType)
             {
                 case DeckData.DeckHoldType.Stacked:
-                    //No need
                     break;
                 case DeckData.DeckHoldType.Spread:
                     AdjustSpreadDeck(ref actions, chosendeck, delayEachCard);
@@ -493,6 +508,15 @@ namespace CardProject
                 case DeckData.DeckHoldType.None:
                         
                     break;
+            }
+        }
+
+        public void AdjustDrawDeck()
+        {
+            for (int j = 0; j < drawDeck.cards.Count; j++)
+            {
+                Vector3 correctPos = PosMoveCardStackedStyle(j, drawDeck.currentPosition, drawDeck.cards.Count);
+                actionList.AddAction(new MoveAction(0.1f, drawDeck.cards[j].gameObject, false, j * DEFAULTDELAY * 1.5f, correctPos, Easing.EaseInCirc));
             }
         }
 
@@ -625,8 +649,7 @@ namespace CardProject
         }
 
         #endregion
-
-
+        
         private void CallACallBack(System.Action actionToCallBack, string nameOfFunc, bool blocking, float delay)
         {
             actionList.AddAction(new CallBackAction(actionToCallBack, nameOfFunc, blocking, delay));
@@ -634,13 +657,105 @@ namespace CardProject
         
         public void DealCardsToAllPlayer(int amount)
         {
-            MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
-            MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
-            MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
-            MoveCardsIntoDeck(drawDeck, player4Hand, amount, DEFAULTDELAY, true, false, 0.07f * 3);
+            if (amount == 0)
+            {
+                return;
+            }
+            
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player3Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    break;
+                case 3:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player2Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
+                    if (player3Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    break;
+                case 4:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player2Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
+                    if (player3Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    if (player4Hand.cards.Count <= 0) MoveCardsIntoDeck(drawDeck, player4Hand, amount, DEFAULTDELAY, true, false, 0.07f * 3);
+                    break;
+            }
+            actionList.AddAction(new WaitAction(0.5f));
+        }
+        
+        public void FillCardsToAllPlayer(int amount)
+        {
+            if (amount == 0)
+            {
+                return;
+            }
+            
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    break;
+                case 3:
+                    MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
+                    MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    break;
+                case 4:
+                    MoveCardsIntoDeck(drawDeck, player1Hand, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    MoveCardsIntoDeck(drawDeck, player2Hand, amount, DEFAULTDELAY, true, false, 0.07f * 1);
+                    MoveCardsIntoDeck(drawDeck, player3Hand, amount, DEFAULTDELAY, true, false, 0.07f * 2);
+                    MoveCardsIntoDeck(drawDeck, player4Hand, amount, DEFAULTDELAY, true, false, 0.07f * 3);
+                    break;
+            }
+            actionList.AddAction(new WaitAction(0.5f));
+        }
+        
+        public void RemoveCardsFromAllPlayer(int amount)
+        {
+            if (amount == 0)
+            {
+                return;
+            }
+            
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player1Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player3Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    break;
+                case 3:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player1Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player2Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player3Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    break;
+                case 4:
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player1Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player2Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player3Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    if (player1Hand.cards.Count <= 0) MoveCardsIntoDeck(player4Hand, discardDeck, amount, DEFAULTDELAY, true, false, 0.07f * 0);
+                    break;
+            }
             actionList.AddAction(new WaitAction(0.5f));
         }
 
+        public void RefillCardInAllHandsToHandSize()
+        {
+            if (isStarted)
+            {
+                int c = GameManager.instance.handSize - player1Hand.cards.Count;
+                
+                if (c < 0)
+                {
+                    RemoveCardsFromAllPlayer(-c);
+                }
+                else if(c > 0)
+                {
+                    FillCardsToAllPlayer(c);
+                }
+            }
+        }
+        
         private void ShuffleDrawDeckViaInput()
         {
             if (Input.GetKeyDown(KeyCode.F))
@@ -660,10 +775,93 @@ namespace CardProject
         }
 
         public void RefilDrawDeckWithDiscardPileAfterHandOut()
+        {
+            RefilDrawDeckWithDiscardPile();
+            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f));
+        }
+        
+        public void RefilDrawDeckWithDiscardPile()
         { 
             MoveCardsIntoDeck(discardDeck, drawDeck, discardDeck.cards.Count, DEFAULTDELAY, true, true, 0.0f);
             actionList.AddAction(new CallBackAction(() => ShuffleThisDeck(drawDeck), nameof(ShuffleThisDeck), true, 0.0f));
-            actionList.AddAction(new CallBackAction(() => DealCardsToAllPlayer(GameManager.instance.handSize), nameof(DealCardsToAllPlayer), true, 0.0f));
+        }
+
+        public void HandleHandNumber()
+        {
+            /*if (currentPlayedCard != null)
+            {
+                return;
+            }*/
+            
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    EmptyHand(player2Hand);
+                    EmptyHand(player4Hand);
+                    break;
+                case 3:
+                    RefillHand(player2Hand);
+                    EmptyHand(player4Hand);
+                    break;
+                case 4:
+                    RefillHand(player2Hand);
+                    RefillHand(player4Hand);
+                    break;
+            }
+        }
+
+        private void RefillHand(DeckData playerHand)
+        {
+            if (playerHand.cards.Count > 0)
+            {
+                return;
+            }
+
+            if (!isStarted) // Don't allow changing handNumber until game start because its buggy
+            {
+                return;
+            }
+            
+            int final = 0;
+            if (GameManager.instance.currentTrick == 0)
+            {
+                final = GameManager.instance.handSize - (GameManager.instance.currentTrick);
+            }
+            else
+            {
+                final = GameManager.instance.handSize - (GameManager.instance.currentTrick - 1);
+            }
+            
+            if (final >= drawDeck.cards.Count)
+            {
+                RefilDrawDeckWithDiscardPile();
+            }
+            
+            MoveCardsIntoDeck(drawDeck, playerHand, final, DEFAULTDELAY * 5, true, false, 0.0f);
+
+            /*void OnTrickEnd()
+            {
+                if (playerHand.cards.Count > 0)
+                {
+                    trickEnded -= OnTrickEnd;
+                }
+                
+                //func
+                MoveCardsIntoDeck(drawDeck, playerHand, GameManager.instance.handSize - (GameManager.instance.currentTrick - 1), DEFAULTDELAY * 5, true, false, 0.0f);
+                
+                trickEnded -= OnTrickEnd;
+            }
+            
+            trickEnded += OnTrickEnd;*/
+        }
+
+        private void EmptyHand(DeckData playerHand)
+        {
+            if (playerHand.cards.Count <= 0)
+            {
+                return;
+            }
+            MoveCardsIntoDeck(playerHand, discardDeck, playerHand.cards.Count, 0.05f, true, false, 0.0f);
         }
     }
 }

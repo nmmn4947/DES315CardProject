@@ -40,13 +40,17 @@ namespace CardProject
         
         public int currentPlayerNumber = 4;
         
-        private int scoreToWin = 2; // first to this score wins
+        private int scoreToWin = 3; // first to this score wins
         
         [HideInInspector]
         public int currentTrick = 0;
 
         [HideInInspector]
         public int handSize = 7;
+        private const int MAXHANDSIZE = 10;
+
+        [HideInInspector]
+        public int handNumber = 4;
 
         private bool runOnce = false;
         
@@ -63,6 +67,7 @@ namespace CardProject
 
         private void Start()
         {
+            ResetGameData();
             cardManager.cardSetUpDone += uiManager.FadeInHUD;
             cardManager.player2Played += HandleUpdatingHUDPlayer2;
             cardManager.player3Played += HandleUpdatingHUDPlayer3;
@@ -75,7 +80,7 @@ namespace CardProject
         
         void Update()
         {
-            if (!runOnce){ TogglePausing(); runOnce = true; }
+            if (!runOnce){ TogglePausing(); uiManager.HandNumberButton._onUp += ChangeHandNumber; runOnce = true; }
             
             DebugInput();
             HandleUpdatingHUD();
@@ -104,30 +109,34 @@ namespace CardProject
             {
                 cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(currentPlaySpeedMultiplier);
                 uiManager.TogglePauseMenu();
+                cardManager.HandleHandNumber();
             }
         }
 
         private void TrickEndsHandling()
         {
-            //Random Winner, give score to that person
-            switch (UnityEngine.Random.Range(0, 4))
+            if (currentTrick > 0) // don't run when started
             {
-                case 0:
-                    p1Score++;
-                    uiManager.PlayerGetScore(uiManager.player1HUD, p1Score);
-                    break;
-                case 1:
-                    p2Score++;
-                    uiManager.PlayerGetScore(uiManager.player2HUD, p2Score);
-                    break;
-                case 2:
-                    p3Score++;
-                    uiManager.PlayerGetScore(uiManager.player3HUD, p3Score);
-                    break;
-                case 3:
-                    p4Score++;
-                    uiManager.PlayerGetScore(uiManager.player4HUD, p4Score);
-                    break;
+                //Random Winner, give score to that person
+                switch (UnityEngine.Random.Range(0, handNumber))
+                {
+                    case 0:
+                        p1Score++;
+                        uiManager.PlayerGetScore(uiManager.player1HUD, p1Score);
+                        break;
+                    case 1:
+                        p3Score++;
+                        uiManager.PlayerGetScore(uiManager.player3HUD, p3Score);
+                        break;
+                    case 2:
+                        p2Score++;
+                        uiManager.PlayerGetScore(uiManager.player2HUD, p2Score);
+                        break;
+                    case 3:
+                        p4Score++;
+                        uiManager.PlayerGetScore(uiManager.player4HUD, p4Score);
+                        break;
+                }
             }
             
             if (WinCheck())
@@ -136,7 +145,7 @@ namespace CardProject
                 //THIS PLAYER WINS!!
                 uiManager.TriggerTrickCountWINAnimation(winner);
                 //RESHUFFLE START THE GAME AGAIN
-                uiManager.FadeOutHUD(false);
+                uiManager.FadeOutHUD(true);
                 cardManager.ResetTheGame();
                 cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.ResetHUD(), nameof(uiManager.ResetHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
                 cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.FadeInHUD(),nameof(uiManager.FadeInHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
@@ -148,13 +157,15 @@ namespace CardProject
             {
                 currentTrick++;
                 cardActionList.AddAction(new CallBackAction(() => uiManager.TriggerTrickCountAnimation(currentTrick), nameof(uiManager.TriggerTrickCountAnimation), true, 0.0f));
-
+                
                 if (cardManager.AllHandsHaveNoCards())
                 {
                     cardActionList.AddAction(new CallBackAction(() => cardManager.RefilDrawDeckWithDiscardPileAfterHandOut(), nameof(cardManager.RefilDrawDeckWithDiscardPileAfterHandOut), true, 0.0f));
                 }
             }
 
+            //cardManager.AdjustDrawDeck();
+            //cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => cardManager.AdjustDrawDeck(), nameof(cardManager.AdjustDrawDeck), true, 0.0f), nameof(cardActionList.CallACallBack), true, 0.0f));
 
         }
 
@@ -223,6 +234,29 @@ namespace CardProject
                     currentPlaySpeedMultiplier = crazyPlaySpeed;
                     break;
             }
+        }
+
+        public void ChangeHandNumber()
+        {
+            switch (handNumber)
+            {
+                case 2:
+                    handNumber = 3;
+                    break;
+                case 3:
+                    handNumber = 4;
+                    break;
+                case 4:
+                    handNumber = 2;
+                    break;
+            }
+            uiManager.EditHandNumberText(handNumber);
+        }
+        
+        public void ChangeHandSize()
+        {
+            // 1-MAXHANDSIZE
+            handSize = (handSize % MAXHANDSIZE) + 1;
         }
 
         #region EvilCode

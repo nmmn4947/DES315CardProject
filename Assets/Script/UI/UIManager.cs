@@ -2,6 +2,7 @@ using System;
 using Napadol.Tools;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CardProject
 {
@@ -86,7 +87,9 @@ namespace CardProject
             
             HandSizeButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             HandSizeButton.GetComponent<RectTransform>().position = outSideOfCanvas;
-            HandSizeButton.SetButtonText("HandSize");
+            HandSizeButton._onUp += GameManager.instance.ChangeHandSize;
+            HandSizeButton._onUp += ChangeHandSizeText;
+            HandSizeButton.SetButtonText("HandSize : 7");
             
             QuitButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             QuitButton.GetComponent<RectTransform>().position = outSideOfCanvas;
@@ -134,9 +137,61 @@ namespace CardProject
             cardActionList.AddAction(new CVGroupFadeAction(hudRoot, blocking, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 0.0f));
         }
         
+        public void FadeOutHUDUIList()
+        {
+            actionList.AddAction(new CVGroupFadeAction(hudRoot, true, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 0.0f));
+        }
+        
         public void FadeInHUD()
         {
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(false);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(false);
+                    break;
+                case 3:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(true);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(false);
+                    break;
+                case 4:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(true);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(true);
+                    break;
+            }
             cardActionList.AddAction(new CVGroupFadeAction(hudRoot, true, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 1.0f));
+        }
+        
+        public void FadeInHUDUIList()
+        {
+            switch (GameManager.instance.handNumber)
+            {
+                case 2:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(false);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(false);
+                    break;
+                case 3:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(true);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(false);
+                    break;
+                case 4:
+                    player1HUD.gameObject.SetActive(true);
+                    player2HUD.gameObject.SetActive(true);
+                    player3HUD.gameObject.SetActive(true);
+                    player4HUD.gameObject.SetActive(true);
+                    break;
+            }
+            actionList.AddAction(new CVGroupFadeAction(hudRoot, true, 0.0f, DEFAULT_FADEDURATION, Easing.EaseLinear, 1.0f));
         }
 
         public void PlayerGetScore(PlayerSetHUD playerHUD, int playerNewScore)
@@ -161,6 +216,10 @@ namespace CardProject
                 actionList.AddAction(new MoveRectTransformAction(newPos + new Vector3(0f, offsetBetweenButtons * -1f, 0f), HandSizeButton.gameObject, false, 0.15f, 0.5f, Easing.EaseOutBounce));
                 actionList.AddAction(new MoveRectTransformAction(newPos + new Vector3(0f, offsetBetweenButtons * -2f, 0f), QuitButton.gameObject, false, 0.2f, 0.5f, Easing.EaseOutBounce));
                 actionList.AddAction(new CVGroupFadeAction(pausedBG, false, 0.0f, 0.25f, Easing.EaseLinear, 1.0f));
+                if (GameManager.instance.currentTrick > 0)
+                {
+                    actionList.AddAction(new CallBackAction(() => FadeOutHUDUIList(), nameof(FadeOutHUDUIList), true, 0.0f));
+                }
             }
             else
             {
@@ -172,6 +231,10 @@ namespace CardProject
                 actionList.AddAction(new MoveRectTransformAction(true, newPos, HandSizeButton.gameObject, false, 0.05f, 0.1f, Easing.EaseOutBack));
                 actionList.AddAction(new MoveRectTransformAction(true, newPos, QuitButton.gameObject, false, 0.0f, 0.1f, Easing.EaseOutBack));
                 actionList.AddAction(new CVGroupFadeAction(pausedBG, false, 0.0f, 0.25f, Easing.EaseLinear, 0.0f));
+                if (GameManager.instance.currentTrick > 0)
+                {
+                    actionList.AddAction(new CallBackAction(() => FadeInHUDUIList(), nameof(FadeInHUDUIList), true, 0.0f));
+                }
             }
         }
 
@@ -194,6 +257,15 @@ namespace CardProject
             }
 
             
+        }
+        private void ChangeHandSizeText()
+        {
+            HandSizeButton.SetButtonText("HandSize : " + GameManager.instance.handSize);
+        }
+
+        public void EditHandNumberText(int handNumber)
+        {
+            HandNumberButton.SetButtonText("HandNumber : " + handNumber);
         }
 
         public void TriggerTrickCountAnimation(int count)
@@ -228,6 +300,10 @@ namespace CardProject
             trickCountText.text = s + " WIN!";
             
             cardActionList.AddAction(new MoveRectTransformAction(true, offScreenCenter, trickCountObj, true, 0.0f, 0.5f, Easing.EaseOutSine));
+            cardActionList.AddAction(new RotateAction(trickCountObj, false, 0.0f, 0.25f, 0.0f, 1, true, Easing.EaseOutSine));
+            cardActionList.AddAction(new ScaleAction(trickCountObj, false, 0.0f, new Vector2(1.2f, 1.2f), 0.25f, Easing.EaseOutBounce));
+            cardActionList.AddAction(new WaitAction(1.0f));
+            cardActionList.AddAction(new ScaleAction(trickCountObj, false, 0.0f, new Vector2(1.0f, 1.0f), 0.25f, Easing.EaseOutSine));
             cardActionList.AddAction(new WaitAction(0.5f));
             cardActionList.AddAction(new MoveRectTransformAction(true, offScreenLeft, trickCountObj, true, 0.0f, 0.5f, Easing.EaseInCirc));
             cardActionList.AddAction(new MoveRectTransformAction(true, offScreenRight, trickCountObj, true, 0.0f, 0.0f, Easing.EaseLinear));
