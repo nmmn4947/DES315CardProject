@@ -52,10 +52,18 @@ namespace CardProject
         public MenuButton HandSizeButton;
         [HideInInspector]
         public MenuButton QuitButton;
+
+        [HideInInspector]
+        public int playSpeedClickCount = 0;
+        [HideInInspector]
+        public int handNumberClickCount = 0;
+        [HideInInspector]
+        public int HandSizeClickCount = 0;
+        
         private Camera cam;
         private Vector3 outSideOfCanvas;
         private float offsetBetweenButtons = 70f;
-        private bool menuIsOpen = false;
+        public bool menuIsOpen = false;
  
         #endregion
 
@@ -79,21 +87,24 @@ namespace CardProject
             PlaySpeedButton.GetComponent<RectTransform>().position = outSideOfCanvas;
             PlaySpeedButton._onUp += GameManager.instance.ChangePlaySpeed;
             PlaySpeedButton._onUp += ChangeSpeedText;
+            PlaySpeedButton._onUp += AddPlaySpeedClickCount;
             PlaySpeedButton.SetButtonText("PlaySpeed : Normal");
             
             HandNumberButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             HandNumberButton.GetComponent<RectTransform>().position = outSideOfCanvas;
+            HandNumberButton._onUp += AddHandNumberClickCount;
             HandNumberButton.SetButtonText("HandNumber : 4");
             
             HandSizeButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             HandSizeButton.GetComponent<RectTransform>().position = outSideOfCanvas;
             HandSizeButton._onUp += GameManager.instance.ChangeHandSize;
             HandSizeButton._onUp += ChangeHandSizeText;
+            HandSizeButton._onUp += AddHandSizeClickCount;
             HandSizeButton.SetButtonText("HandSize : 7");
             
             QuitButton = Instantiate(menuButtonPrefab, menuRoot.transform);
             QuitButton.GetComponent<RectTransform>().position = outSideOfCanvas;
-            QuitButton._onUp += ExitApplication;
+            QuitButton._onUp += ExitGame;
             QuitButton.SetButtonText("Quit");
             #endregion
             #region HUDs
@@ -309,8 +320,9 @@ namespace CardProject
             cardActionList.AddAction(new MoveRectTransformAction(true, offScreenRight, trickCountObj, true, 0.0f, 0.0f, Easing.EaseLinear));
         }
 
-        private void ExitApplication()
+        private void ExitGame()
         {
+            TelemetryGenerator.instance.SaveBeforeExitGame();
             Application.Quit();
         }
 
@@ -328,6 +340,19 @@ namespace CardProject
                     HandSizeButton._onUp?.Invoke();
                     break;
             }
+        }
+
+        public void AddPlaySpeedClickCount()
+        {
+            playSpeedClickCount++;
+        }
+        public void AddHandNumberClickCount()
+        {
+            handNumberClickCount++;
+        }
+        public void AddHandSizeClickCount()
+        {
+            HandSizeClickCount++;
         }
     }
 }

@@ -32,6 +32,10 @@ namespace CardProject
         }
         public PlaySpeedState currentPlaySpeed = PlaySpeedState.Normal;
         private float currentPlaySpeedMultiplier = 1.0f;
+        public float GetCurrentPlaySpeed()
+        {
+            return currentPlaySpeedMultiplier;
+        }
 
         private float slowPlaySpeed = 0.5f;
         private float normalPlaySpeed = 1.0f;
@@ -53,6 +57,9 @@ namespace CardProject
         public int handNumber = 4;
 
         private bool runOnce = false;
+
+        [HideInInspector]
+        public int escCount;
         
         void Awake()
         {
@@ -110,6 +117,8 @@ namespace CardProject
                 cardManager.GetComponent<ActionListManager>().LerpTimeMultiplier(currentPlaySpeedMultiplier);
                 uiManager.TogglePauseMenu();
                 cardManager.HandleHandNumber();
+                escCount++;
+                TelemetryGenerator.instance.Log();
             }
         }
 
@@ -259,6 +268,23 @@ namespace CardProject
             handSize = (handSize % MAXHANDSIZE) + 1;
         }
 
+        public int GetPlayerScore(int playerNumber) //1234
+        {
+            switch (playerNumber)
+            {
+                case 1:
+                    return p1Score;
+                case 2:
+                    return p2Score;
+                case 3:
+                    return p3Score;
+                case 4:
+                    return p4Score;
+            }
+
+            return -1;
+        }
+        
         #region EvilCode
 
         private void HandleUpdatingHUDPlayer2()
