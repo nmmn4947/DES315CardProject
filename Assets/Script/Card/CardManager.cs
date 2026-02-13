@@ -53,6 +53,7 @@ namespace CardProject
 
         private bool isResetting = false;
         private bool isStarted = false;
+        private bool cardIsSelected = false;
         
         public void SetResettingBool(bool b)
         {
@@ -578,9 +579,10 @@ namespace CardProject
                 }
             }
             
-            if (currentHoverCard != null && Input.GetMouseButtonDown(0))
+            if (currentHoverCard != null && (Input.GetMouseButtonDown(0) || cardIsSelected))
             {
                 currentPlayedCard = currentHoverCard;
+                cardIsSelected = false;
                 
                 // Do something when clicking on a card
                 actionList.AddAction(new RotateAction(currentHoverCard.gameObject, false, 0.0f, 0.5f, 0.0f, Easing.EaseOutExpo));
@@ -621,6 +623,23 @@ namespace CardProject
             }
         }
 
+        public bool PlayACard()
+        {
+            if (!isStarted)
+            {
+                return false;
+            }
+            
+            if (currentPlayedCard == null)
+            {
+                currentHoverCard = player1Hand.cards[UnityEngine.Random.Range(0, player1Hand.cards.Count)];
+                cardIsSelected = true;
+                return true;
+            }
+            
+            return false;
+        }
+        
         #region Invokers
 
         private void InvokePlayer2Played()

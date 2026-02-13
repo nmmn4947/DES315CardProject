@@ -148,7 +148,7 @@ namespace CardProject
                 uiManager.FadeOutHUD(true);
                 cardManager.ResetTheGame();
                 cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.ResetHUD(), nameof(uiManager.ResetHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
-                cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.FadeInHUD(),nameof(uiManager.FadeInHUD), false, 0.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
+                cardActionList.AddAction(new CallBackAction(() => cardActionList.CallACallBack(() => uiManager.FadeInHUD(),nameof(uiManager.FadeInHUD), false, 4.0f), nameof(cardActionList.CallACallBack), false, 0.0f));
                 //RESET DATA
                 ResetGameData();
                 

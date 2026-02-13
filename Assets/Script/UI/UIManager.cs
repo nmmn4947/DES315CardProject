@@ -313,5 +313,21 @@ namespace CardProject
         {
             Application.Quit();
         }
+
+        public void RandomlyClickOnAnOption()
+        {
+            switch (UnityEngine.Random.Range(0, 3))
+            {
+                case 0:
+                    PlaySpeedButton._onUp?.Invoke();
+                    break;
+                case 1:
+                    HandNumberButton._onUp?.Invoke();
+                    break;
+                case 2:
+                    HandSizeButton._onUp?.Invoke();
+                    break;
+            }
+        }
     }
 }
