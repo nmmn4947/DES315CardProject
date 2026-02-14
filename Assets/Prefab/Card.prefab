@@ -189,6 +189,8 @@ MonoBehaviour:
   - {fileID: -1326391273, guid: 542e305e0e33b0c46af768cfd03da570, type: 3}
   frontCardRenderer: {fileID: 3279727729838962618}
   backCardRenderer: {fileID: 1802798658802580353}
+  isFront: 0
+  deckZ: 0
 --- !u!61 &4303532636677364658
 BoxCollider2D:
   m_ObjectHideFlags: 0

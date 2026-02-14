@@ -31,6 +31,22 @@ namespace CardProject
         {
             actions.Add(action);
         }
+
+        public void AddTailAction()
+        {
+            
+        }
+
+        public void AddHeadAction()
+        {
+            
+        }
+
+        public void ClearAfterThisAction()
+        {
+            
+        }
+        
         public bool IsEmpty()
         {
             if (actions.Count > 0)
