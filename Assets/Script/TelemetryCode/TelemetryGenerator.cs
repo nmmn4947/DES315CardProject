@@ -35,6 +35,8 @@ namespace CardProject
         private bool once = false;
 
         private static string path = "";
+
+        public bool noTelemetry = false;
         
         private void Awake()
         {
@@ -131,6 +133,10 @@ namespace CardProject
 
         public void InitCSV()
         {
+            if (noTelemetry)
+            {
+                return;
+            }
             string fileName = "test_" + runCount + ".csv";
             path = Path.Combine(Application.dataPath, fileName);
 
@@ -142,6 +148,10 @@ namespace CardProject
 
         public void Log()
         {
+            if (noTelemetry)
+            {
+                return;
+            }
             LogEvent(ELAPSEDTIME.TotalSeconds, realTimeMEAN, realTimeMEDIAN, realTimeWorst,
                 _gameManager.currentTrick, _gameManager.GetPlayerScore(1), _gameManager.GetPlayerScore(2), _gameManager.GetPlayerScore(3), _gameManager.GetPlayerScore(4),
                 _gameManager.escCount, _uiManager.playSpeedClickCount, _uiManager.handNumberClickCount, _uiManager.HandSizeClickCount);
@@ -160,6 +170,10 @@ namespace CardProject
         
         public void SaveBeforeExitGame()
         {
+            if (noTelemetry)
+            {
+                return;
+            }
             PlayerPrefs.SetInt("testCount", runCount++);
             //GenerateCSV();
         }

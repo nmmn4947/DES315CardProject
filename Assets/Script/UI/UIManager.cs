@@ -129,6 +129,13 @@ namespace CardProject
             #endregion
         }
 
+        protected override void DerivedUpdate()
+        {
+            offScreenRight = cam.ViewportToScreenPoint(new Vector3(1.5f, 0.5f, 0.0f));
+            offScreenCenter = cam.ViewportToScreenPoint(new Vector3(0.5f, 0.5f, 0.0f));
+            offScreenLeft = cam.ViewportToScreenPoint(new Vector3(-0.5f, 0.5f, 0.0f));
+        }
+
         public void ResetHUD()
         {
             int amount = GameManager.instance.handSize;

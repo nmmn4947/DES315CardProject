@@ -37,9 +37,9 @@ namespace CardProject
             
         }
 
-        public void AddHeadAction()
+        public void AddHeadAction(Action action)
         {
-            
+            actions.Insert(0, action);
         }
 
         public void ClearAfterThisAction()

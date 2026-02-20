@@ -19,8 +19,14 @@ namespace CardProject
             actionList = new ActionList();
         }
 
-        protected virtual void Update()
+        protected virtual void DerivedUpdate()
         {
+            
+        }
+
+        private void Update()
+        {
+            DerivedUpdate();
             actionList.RunActions(Time.deltaTime * timeMultiplier);
         }
 

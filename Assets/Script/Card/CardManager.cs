@@ -95,10 +95,10 @@ namespace CardProject
             isStarted = true;
         }
 
-        protected override void Update()
+        protected override void DerivedUpdate()
         {
             CardUpdateOnHand(player1Hand);
-            actionList.RunActions(Time.deltaTime * timeMultiplier);
+            //actionList.RunActions(Time.deltaTime * timeMultiplier);
             if (Input.GetKeyDown(KeyCode.R))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
